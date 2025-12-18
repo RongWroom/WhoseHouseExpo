@@ -3,9 +3,11 @@
 ## [2024-11-12] - RLS Infinite Recursion Fix
 
 ### 🐛 Bug Fixed
+
 **Issue:** App stuck on loading screen with spinning cog indefinitely.
 
-**Root Cause:** 
+**Root Cause:**
+
 1. Row-Level Security (RLS) helper functions (`user_role()`, `is_social_worker()`, etc.) were querying the `profiles` table
 2. These queries triggered RLS policies
 3. RLS policies called the same helper functions
@@ -15,12 +17,15 @@
 ### ✅ Solution Applied
 
 #### Database Changes
+
 Applied migration `011_fix_rls_and_schema.sql` which:
+
 - Recreated all RLS helper functions with `SET row_security = off`
 - This allows the functions to query `profiles` without triggering RLS policies
 - Breaking the infinite recursion loop
 
 **Functions Fixed:**
+
 - `public.user_role()`
 - `public.is_social_worker()`
 - `public.is_foster_carer()`
@@ -28,7 +33,9 @@ Applied migration `011_fix_rls_and_schema.sql` which:
 - `public.user_organization()`
 
 #### Code Changes
+
 **File:** `src/contexts/AuthContext.tsx`
+
 - Fixed loading state bug: Now sets `isLoading = false` when no session exists
 - Re-enabled `getUserPermissions()` call (was temporarily disabled)
 - Cleaned up temporary comments
@@ -37,13 +44,15 @@ Applied migration `011_fix_rls_and_schema.sql` which:
 ### 🧹 Cleanup Performed
 
 **Deleted Files:**
+
 - `APPLY_THIS_FIX.sql` - Temporary fix file (already applied)
 - `emergency_rls_fix.sql` - Old emergency fix attempt
-- `disable_rls_emergency.sql` - Old emergency fix attempt  
+- `disable_rls_emergency.sql` - Old emergency fix attempt
 - `temp_query.sql` - Temporary query file
 - `RLS_PROBLEM_ANALYSIS.md` - Debugging documentation
 
 **Code Cleanup:**
+
 - Removed "TEMPORARY" comments from AuthContext
 - Re-enabled permissions loading
 - Improved console logging
@@ -51,6 +60,7 @@ Applied migration `011_fix_rls_and_schema.sql` which:
 ### 📊 Current State
 
 **Database Migrations:** All 11 migrations applied successfully
+
 - ✅ 001: Initial schema
 - ✅ 002: Row-level security (with recursion - fixed by 011)
 - ✅ 003: Auth functions
@@ -64,6 +74,7 @@ Applied migration `011_fix_rls_and_schema.sql` which:
 - ✅ 011: Fix RLS recursion ← **This one fixed the issue**
 
 **App Status:** ✅ Working
+
 - Login screen loads correctly
 - Dashboard accessible for all roles
 - No RLS errors
@@ -72,9 +83,10 @@ Applied migration `011_fix_rls_and_schema.sql` which:
 ### 🔍 Verification
 
 To verify the fix is working:
+
 ```sql
 -- Run in Supabase SQL Editor
-SELECT 
+SELECT
   proname as function_name,
   proconfig as config
 FROM pg_proc
