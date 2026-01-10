@@ -34,6 +34,7 @@ import { Text, Input } from '../../../src/components/ui';
 import { SunbeamSurface } from '../../../src/components/sunbeam';
 import { useAuth } from '../../../src/contexts/AuthContext';
 import { supabase } from '../../../src/lib/supabase';
+import { THEME } from '../../../src/lib/theme';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const PHOTO_GRID_GAP = 12;
@@ -607,14 +608,14 @@ export default function HouseProfileScreen() {
         {/* Hero Header */}
         <View className="mb-6">
           <View className="flex-row items-center gap-3 mb-2">
-            <View className="w-10 h-10 rounded-xl bg-[#F9F506]/20 items-center justify-center">
-              <Home size={20} color="#181811" />
+            <View className="w-10 h-10 rounded-xl bg-accent-500/20 items-center justify-center">
+              <Home size={20} color={THEME.colors.text.primary} />
             </View>
             <View className="flex-1">
-              <Text className="text-2xl font-bold text-[#181811]">Your Home Gallery</Text>
+              <Text className="text-2xl font-bold text-gray-900">Your Home Gallery</Text>
             </View>
           </View>
-          <Text className="text-[#8C8B5F] text-base leading-relaxed">
+          <Text className="text-gray-500 text-base leading-relaxed">
             Help the child picture their new home. Clear, welcoming photos make all the difference.
           </Text>
         </View>
@@ -624,17 +625,17 @@ export default function HouseProfileScreen() {
           <View className="p-4">
             <View className="flex-row items-center justify-between mb-3">
               <View className="flex-row items-center gap-2">
-                <Sparkles size={16} color="#F9F506" />
-                <Text className="text-sm font-bold text-[#181811]">Photo Progress</Text>
+                <Sparkles size={16} color={THEME.colors.accent} />
+                <Text className="text-sm font-bold text-gray-900">Photo Progress</Text>
               </View>
-              <Text className="text-sm font-bold text-[#181811]">
+              <Text className="text-sm font-bold text-gray-900">
                 {completedRequired}/{requiredSlots.length} required
               </Text>
             </View>
             <View className="h-2 bg-gray-100 rounded-full overflow-hidden">
               <Animated.View
                 entering={FadeIn.delay(200)}
-                className="h-full bg-[#F9F506] rounded-full"
+                className="h-full bg-accent-500 rounded-full"
                 style={{ width: `${progressPercent}%` }}
               />
             </View>
@@ -695,12 +696,12 @@ export default function HouseProfileScreen() {
                       </View>
                       {/* Edit badge */}
                       <View className="absolute top-2 right-2 w-7 h-7 rounded-full bg-white/90 items-center justify-center shadow-sm">
-                        <Camera size={14} color="#181811" />
+                        <Camera size={14} color={THEME.colors.text.primary} />
                       </View>
                       {/* Required badge */}
                       {isRequired && (
-                        <View className="absolute top-2 left-2 bg-[#F9F506] rounded-full px-2 py-0.5">
-                          <Text className="text-[10px] font-bold text-[#181811]">✓</Text>
+                        <View className="absolute top-2 left-2 bg-accent-500 rounded-full px-2 py-0.5">
+                          <Text className="text-[10px] font-bold text-gray-900">✓</Text>
                         </View>
                       )}
                     </View>
@@ -708,29 +709,32 @@ export default function HouseProfileScreen() {
                     <View
                       className={`rounded-2xl border-2 border-dashed items-center justify-center ${
                         isRequired
-                          ? 'border-[#F9F506]/50 bg-[#F9F506]/5'
+                          ? 'border-accent-500/50 bg-accent-500/5'
                           : 'border-gray-200 bg-gray-50'
                       }`}
                       style={{ aspectRatio: 4 / 3 }}
                     >
                       <View
                         className={`w-10 h-10 rounded-full items-center justify-center mb-2 ${
-                          isRequired ? 'bg-[#F9F506]/20' : 'bg-gray-100'
+                          isRequired ? 'bg-accent-500/20' : 'bg-gray-100'
                         }`}
                       >
-                        <ImagePlus size={20} color={isRequired ? '#181811' : '#9CA3AF'} />
+                        <ImagePlus
+                          size={20}
+                          color={isRequired ? THEME.colors.text.primary : '#9CA3AF'}
+                        />
                       </View>
                       <Text
                         className={`text-xs font-semibold text-center px-2 ${
-                          isRequired ? 'text-[#181811]' : 'text-gray-500'
+                          isRequired ? 'text-gray-900' : 'text-gray-500'
                         }`}
                         numberOfLines={2}
                       >
                         {slot.label}
                       </Text>
                       {isRequired && (
-                        <View className="mt-1.5 bg-[#F9F506] rounded-full px-2 py-0.5">
-                          <Text className="text-[9px] font-bold text-[#181811]">REQUIRED</Text>
+                        <View className="mt-1.5 bg-accent-500 rounded-full px-2 py-0.5">
+                          <Text className="text-[9px] font-bold text-gray-900">REQUIRED</Text>
                         </View>
                       )}
                     </View>
@@ -748,8 +752,8 @@ export default function HouseProfileScreen() {
               <Text className="text-sm">💡</Text>
             </View>
             <View className="flex-1">
-              <Text className="text-sm font-semibold text-[#181811] mb-1">Photo tips</Text>
-              <Text className="text-xs text-[#8C8B5F] leading-relaxed">
+              <Text className="text-sm font-semibold text-gray-900 mb-1">Photo tips</Text>
+              <Text className="text-xs text-gray-500 leading-relaxed">
                 Natural daylight works best. Show spaces as they normally look — tidy but lived-in
                 feels more welcoming than too perfect.
               </Text>
@@ -765,14 +769,14 @@ export default function HouseProfileScreen() {
       {/* Hero Header */}
       <View className="mb-6">
         <View className="flex-row items-center gap-3 mb-2">
-          <View className="w-10 h-10 rounded-xl bg-[#F9F506]/20 items-center justify-center">
-            <Users size={20} color="#181811" />
+          <View className="w-10 h-10 rounded-xl bg-accent-500/20 items-center justify-center">
+            <Users size={20} color={THEME.colors.text.primary} />
           </View>
           <View className="flex-1">
-            <Text className="text-2xl font-bold text-[#181811]">Meet the Family</Text>
+            <Text className="text-2xl font-bold text-gray-900">Meet the Family</Text>
           </View>
         </View>
-        <Text className="text-[#8C8B5F] text-base leading-relaxed">
+        <Text className="text-gray-500 text-base leading-relaxed">
           Help the child know who they'll be living with. Every family is unique — add as many
           people as you need.
         </Text>
@@ -782,10 +786,10 @@ export default function HouseProfileScreen() {
       <SunbeamSurface className="mb-6">
         <View className="p-4">
           <View className="flex-row items-center gap-2 mb-3">
-            <Sparkles size={16} color="#F9F506" />
-            <Text className="text-sm font-bold text-[#181811]">Quick Add</Text>
+            <Sparkles size={16} color={THEME.colors.accent} />
+            <Text className="text-sm font-bold text-gray-900">Quick Add</Text>
           </View>
-          <Text className="text-xs text-[#8C8B5F] mb-4">
+          <Text className="text-xs text-gray-500 mb-4">
             Tap to add someone. You can edit details afterwards.
           </Text>
           <View className="flex-row flex-wrap gap-2">
@@ -799,9 +803,9 @@ export default function HouseProfileScreen() {
                   })
                 }
                 activeOpacity={0.7}
-                className="rounded-full bg-[#F9F506]/10 border border-[#F9F506]/30 px-4 py-2"
+                className="rounded-full bg-accent-500/10 border border-accent-500/30 px-4 py-2"
               >
-                <Text className="text-sm font-medium text-[#181811]">{tag.label}</Text>
+                <Text className="text-sm font-medium text-gray-900">{tag.label}</Text>
               </TouchableOpacity>
             ))}
           </View>
@@ -814,16 +818,16 @@ export default function HouseProfileScreen() {
             <View className="w-16 h-16 rounded-full bg-gray-100 items-center justify-center mb-4">
               <Users size={28} color="#9CA3AF" />
             </View>
-            <Text className="text-lg font-bold text-[#181811] mb-1">No one added yet</Text>
-            <Text className="text-sm text-[#8C8B5F] text-center mb-4">
+            <Text className="text-lg font-bold text-gray-900 mb-1">No one added yet</Text>
+            <Text className="text-sm text-gray-500 text-center mb-4">
               Use the quick tags above or add someone manually below.
             </Text>
             <TouchableOpacity
-              className="rounded-full bg-[#F9F506] px-6 py-3"
+              className="rounded-full bg-accent-500 px-6 py-3"
               onPress={() => addHouseholdMember()}
               activeOpacity={0.8}
             >
-              <Text className="text-sm font-bold text-[#181811]">+ Add someone</Text>
+              <Text className="text-sm font-bold text-gray-900">+ Add someone</Text>
             </TouchableOpacity>
           </View>
         </SunbeamSurface>
@@ -848,12 +852,12 @@ export default function HouseProfileScreen() {
                           resizeMode="cover"
                         />
                       ) : (
-                        <View className="w-20 h-20 rounded-2xl bg-[#F9F506]/10 items-center justify-center border-2 border-dashed border-[#F9F506]/30">
-                          <User size={28} color="#181811" />
+                        <View className="w-20 h-20 rounded-2xl bg-accent-500/10 items-center justify-center border-2 border-dashed border-accent-500/30">
+                          <User size={28} color={THEME.colors.text.primary} />
                         </View>
                       )}
-                      <View className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-[#F9F506] items-center justify-center border-2 border-white">
-                        <Camera size={12} color="#181811" />
+                      <View className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-accent-500 items-center justify-center border-2 border-white">
+                        <Camera size={12} color={THEME.colors.text.primary} />
                       </View>
                     </TouchableOpacity>
                     <TouchableOpacity
@@ -909,11 +913,11 @@ export default function HouseProfileScreen() {
           ))}
 
           <TouchableOpacity
-            className="rounded-xl border-2 border-dashed border-[#F9F506]/30 bg-[#F9F506]/5 py-4 items-center"
+            className="rounded-xl border-2 border-dashed border-accent-500/30 bg-accent-500/5 py-4 items-center"
             onPress={() => addHouseholdMember()}
             activeOpacity={0.7}
           >
-            <Text className="text-sm font-bold text-[#181811]">+ Add someone else</Text>
+            <Text className="text-sm font-bold text-gray-900">+ Add someone else</Text>
           </TouchableOpacity>
         </View>
       )}
@@ -925,14 +929,14 @@ export default function HouseProfileScreen() {
       {/* Hero Header */}
       <View className="mb-6">
         <View className="flex-row items-center gap-3 mb-2">
-          <View className="w-10 h-10 rounded-xl bg-[#F9F506]/20 items-center justify-center">
-            <MapPin size={20} color="#181811" />
+          <View className="w-10 h-10 rounded-xl bg-accent-500/20 items-center justify-center">
+            <MapPin size={20} color={THEME.colors.text.primary} />
           </View>
           <View className="flex-1">
-            <Text className="text-2xl font-bold text-[#181811]">Explore the Area</Text>
+            <Text className="text-2xl font-bold text-gray-900">Explore the Area</Text>
           </View>
         </View>
-        <Text className="text-[#8C8B5F] text-base leading-relaxed">
+        <Text className="text-gray-500 text-base leading-relaxed">
           Share your favourite local spots — parks, play centres, weekend activities. Help the child
           imagine life in your neighbourhood.
         </Text>
@@ -942,10 +946,10 @@ export default function HouseProfileScreen() {
       <SunbeamSurface className="mb-6">
         <View className="p-4">
           <View className="flex-row items-center gap-2 mb-3">
-            <Clock size={16} color="#F9F506" />
-            <Text className="text-sm font-bold text-[#181811]">Neighbourhood Overview</Text>
+            <Clock size={16} color={THEME.colors.accent} />
+            <Text className="text-sm font-bold text-gray-900">Neighbourhood Overview</Text>
           </View>
-          <Text className="text-xs text-[#8C8B5F] mb-4">
+          <Text className="text-xs text-gray-500 mb-4">
             A brief description — e.g. "We live near the park and there's a cinema a short drive
             away."
           </Text>
@@ -963,10 +967,10 @@ export default function HouseProfileScreen() {
       <SunbeamSurface className="mb-6">
         <View className="p-4">
           <View className="flex-row items-center gap-2 mb-3">
-            <Sparkles size={16} color="#F9F506" />
-            <Text className="text-sm font-bold text-[#181811]">Quick Ideas</Text>
+            <Sparkles size={16} color={THEME.colors.accent} />
+            <Text className="text-sm font-bold text-gray-900">Quick Ideas</Text>
           </View>
-          <Text className="text-xs text-[#8C8B5F] mb-4">
+          <Text className="text-xs text-gray-500 mb-4">
             Tap to add, then personalise with details.
           </Text>
           <View className="flex-row flex-wrap gap-2">
@@ -975,9 +979,9 @@ export default function HouseProfileScreen() {
                 key={tag}
                 onPress={() => addLocalAreaHighlight(tag)}
                 activeOpacity={0.7}
-                className="rounded-full bg-[#F9F506]/10 border border-[#F9F506]/30 px-4 py-2"
+                className="rounded-full bg-accent-500/10 border border-accent-500/30 px-4 py-2"
               >
-                <Text className="text-sm font-medium text-[#181811]">{tag}</Text>
+                <Text className="text-sm font-medium text-gray-900">{tag}</Text>
               </TouchableOpacity>
             ))}
           </View>
@@ -990,16 +994,16 @@ export default function HouseProfileScreen() {
             <View className="w-16 h-16 rounded-full bg-gray-100 items-center justify-center mb-4">
               <MapPin size={28} color="#9CA3AF" />
             </View>
-            <Text className="text-lg font-bold text-[#181811] mb-1">No places added yet</Text>
-            <Text className="text-sm text-[#8C8B5F] text-center mb-4">
+            <Text className="text-lg font-bold text-gray-900 mb-1">No places added yet</Text>
+            <Text className="text-sm text-gray-500 text-center mb-4">
               Parks, play centres, cinemas — anywhere you enjoy visiting together.
             </Text>
             <TouchableOpacity
-              className="rounded-full bg-[#F9F506] px-6 py-3"
+              className="rounded-full bg-accent-500 px-6 py-3"
               onPress={() => addLocalAreaHighlight()}
               activeOpacity={0.8}
             >
-              <Text className="text-sm font-bold text-[#181811]">+ Add a place</Text>
+              <Text className="text-sm font-bold text-gray-900">+ Add a place</Text>
             </TouchableOpacity>
           </View>
         </SunbeamSurface>
@@ -1017,7 +1021,7 @@ export default function HouseProfileScreen() {
                       <View className="w-8 h-8 rounded-lg bg-blue-50 items-center justify-center">
                         <MapPin size={16} color="#1d4ed8" />
                       </View>
-                      <Text className="text-sm font-bold text-[#181811]">Place {index + 1}</Text>
+                      <Text className="text-sm font-bold text-gray-900">Place {index + 1}</Text>
                     </View>
                     <TouchableOpacity
                       onPress={() => removeLocalAreaHighlight(highlight.id)}
@@ -1054,11 +1058,11 @@ export default function HouseProfileScreen() {
           ))}
 
           <TouchableOpacity
-            className="rounded-xl border-2 border-dashed border-[#F9F506]/30 bg-[#F9F506]/5 py-4 items-center"
+            className="rounded-xl border-2 border-dashed border-accent-500/30 bg-accent-500/5 py-4 items-center"
             onPress={() => addLocalAreaHighlight()}
             activeOpacity={0.7}
           >
-            <Text className="text-sm font-bold text-[#181811]">+ Add another place</Text>
+            <Text className="text-sm font-bold text-gray-900">+ Add another place</Text>
           </TouchableOpacity>
         </View>
       )}
@@ -1070,14 +1074,14 @@ export default function HouseProfileScreen() {
       {/* Hero Header */}
       <View className="mb-6">
         <View className="flex-row items-center gap-3 mb-2">
-          <View className="w-10 h-10 rounded-xl bg-[#F9F506]/20 items-center justify-center">
-            <Gamepad2 size={20} color="#181811" />
+          <View className="w-10 h-10 rounded-xl bg-accent-500/20 items-center justify-center">
+            <Gamepad2 size={20} color={THEME.colors.text.primary} />
           </View>
           <View className="flex-1">
-            <Text className="text-2xl font-bold text-[#181811]">Life at Home</Text>
+            <Text className="text-2xl font-bold text-gray-900">Life at Home</Text>
           </View>
         </View>
-        <Text className="text-[#8C8B5F] text-base leading-relaxed">
+        <Text className="text-gray-500 text-base leading-relaxed">
           Share your house rules and favourite activities. Help the child know what to expect.
         </Text>
       </View>
@@ -1086,10 +1090,10 @@ export default function HouseProfileScreen() {
       <SunbeamSurface className="mb-6">
         <View className="p-4">
           <View className="flex-row items-center gap-2 mb-3">
-            <Home size={16} color="#F9F506" />
-            <Text className="text-sm font-bold text-[#181811]">House Rules</Text>
+            <Home size={16} color={THEME.colors.accent} />
+            <Text className="text-sm font-bold text-gray-900">House Rules</Text>
           </View>
-          <Text className="text-xs text-[#8C8B5F] mb-4">
+          <Text className="text-xs text-gray-500 mb-4">
             Friendly expectations that help everyone feel safe.
           </Text>
 
@@ -1099,9 +1103,9 @@ export default function HouseProfileScreen() {
                 key={rule}
                 onPress={() => addHouseRule(rule)}
                 activeOpacity={0.7}
-                className="rounded-full bg-[#F9F506]/10 border border-[#F9F506]/30 px-3 py-1.5"
+                className="rounded-full bg-accent-500/10 border border-accent-500/30 px-3 py-1.5"
               >
-                <Text className="text-xs font-medium text-[#181811]">{rule}</Text>
+                <Text className="text-xs font-medium text-gray-900">{rule}</Text>
               </TouchableOpacity>
             ))}
           </View>
@@ -1113,7 +1117,7 @@ export default function HouseProfileScreen() {
                   key={`${rule}-${index}`}
                   className="flex-row items-center rounded-xl bg-gray-50 border border-gray-100 px-3 py-2"
                 >
-                  <Text className="text-sm text-[#181811] flex-1">{rule}</Text>
+                  <Text className="text-sm text-gray-900 flex-1">{rule}</Text>
                   <TouchableOpacity
                     onPress={() => removeHouseRule(index)}
                     className="p-1.5 rounded-full bg-red-50"
@@ -1135,10 +1139,10 @@ export default function HouseProfileScreen() {
             </View>
             <TouchableOpacity
               onPress={handleAddHouseRule}
-              className="rounded-xl bg-[#F9F506] px-4 py-3"
+              className="rounded-xl bg-accent-500 px-4 py-3"
               activeOpacity={0.8}
             >
-              <Text className="text-sm font-bold text-[#181811]">Add</Text>
+              <Text className="text-sm font-bold text-gray-900">Add</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -1148,8 +1152,8 @@ export default function HouseProfileScreen() {
       <SunbeamSurface>
         <View className="p-4">
           <View className="flex-row items-center gap-2 mb-3">
-            <Sparkles size={16} color="#F9F506" />
-            <Text className="text-sm font-bold text-[#181811]">Things We Enjoy</Text>
+            <Sparkles size={16} color={THEME.colors.accent} />
+            <Text className="text-sm font-bold text-gray-900">Things We Enjoy</Text>
           </View>
 
           {(['tvShows', 'games', 'hobbies'] as EntertainmentCategory[]).map(
@@ -1158,10 +1162,10 @@ export default function HouseProfileScreen() {
                 key={category}
                 className={catIndex > 0 ? 'mt-6 pt-6 border-t border-gray-100' : ''}
               >
-                <Text className="text-sm font-semibold text-[#181811] mb-1">
+                <Text className="text-sm font-semibold text-gray-900 mb-1">
                   {ENTERTAINMENT_CONFIG[category].label}
                 </Text>
-                <Text className="text-xs text-[#8C8B5F] mb-3">
+                <Text className="text-xs text-gray-500 mb-3">
                   Share favourites so they know what to expect.
                 </Text>
 
@@ -1192,7 +1196,7 @@ export default function HouseProfileScreen() {
                       activeOpacity={0.7}
                       className="rounded-full border border-gray-200 bg-white px-3 py-1.5"
                     >
-                      <Text className="text-xs font-medium text-[#8C8B5F]">+ {suggestion}</Text>
+                      <Text className="text-xs font-medium text-gray-500">+ {suggestion}</Text>
                     </TouchableOpacity>
                   ))}
                 </View>
@@ -1212,10 +1216,10 @@ export default function HouseProfileScreen() {
                   </View>
                   <TouchableOpacity
                     onPress={() => handleAddEntertainment(category)}
-                    className="rounded-xl bg-[#F9F506] px-4 py-3"
+                    className="rounded-xl bg-accent-500 px-4 py-3"
                     activeOpacity={0.8}
                   >
-                    <Text className="text-sm font-bold text-[#181811]">Add</Text>
+                    <Text className="text-sm font-bold text-gray-900">Add</Text>
                   </TouchableOpacity>
                 </View>
               </View>
@@ -1240,14 +1244,14 @@ export default function HouseProfileScreen() {
         {/* Hero Header */}
         <View className="mb-6">
           <View className="flex-row items-center gap-3 mb-2">
-            <View className="w-10 h-10 rounded-xl bg-[#F9F506]/20 items-center justify-center">
-              <CheckCircle size={20} color="#181811" />
+            <View className="w-10 h-10 rounded-xl bg-accent-500/20 items-center justify-center">
+              <CheckCircle size={20} color={THEME.colors.text.primary} />
             </View>
             <View className="flex-1">
-              <Text className="text-2xl font-bold text-[#181811]">Ready to Share</Text>
+              <Text className="text-2xl font-bold text-gray-900">Ready to Share</Text>
             </View>
           </View>
-          <Text className="text-[#8C8B5F] text-base leading-relaxed">
+          <Text className="text-gray-500 text-base leading-relaxed">
             Review your profile before making it visible to children in your care.
           </Text>
         </View>
@@ -1256,18 +1260,18 @@ export default function HouseProfileScreen() {
         <SunbeamSurface className="mb-6">
           <View className="p-4">
             <View className="flex-row items-center gap-2 mb-4">
-              <Sparkles size={16} color="#F9F506" />
-              <Text className="text-sm font-bold text-[#181811]">Profile Summary</Text>
+              <Sparkles size={16} color={THEME.colors.accent} />
+              <Text className="text-sm font-bold text-gray-900">Profile Summary</Text>
             </View>
 
             <View className="gap-3">
               <View className="flex-row items-center justify-between py-2 border-b border-gray-100">
                 <View className="flex-row items-center gap-2">
                   <Home size={16} color="#8C8B5F" />
-                  <Text className="text-sm text-[#181811]">Photos</Text>
+                  <Text className="text-sm text-gray-900">Photos</Text>
                 </View>
                 <View className="flex-row items-center gap-2">
-                  <Text className="text-sm font-bold text-[#181811]">
+                  <Text className="text-sm font-bold text-gray-900">
                     {completedPhotos}/{requiredSlots.length}
                   </Text>
                   {completedPhotos >= requiredSlots.length && (
@@ -1279,10 +1283,10 @@ export default function HouseProfileScreen() {
               <View className="flex-row items-center justify-between py-2 border-b border-gray-100">
                 <View className="flex-row items-center gap-2">
                   <Users size={16} color="#8C8B5F" />
-                  <Text className="text-sm text-[#181811]">Household Members</Text>
+                  <Text className="text-sm text-gray-900">Household Members</Text>
                 </View>
                 <View className="flex-row items-center gap-2">
-                  <Text className="text-sm font-bold text-[#181811]">
+                  <Text className="text-sm font-bold text-gray-900">
                     {profileData.householdMembers.length}
                   </Text>
                   {profileData.householdMembers.length > 0 && (
@@ -1294,10 +1298,10 @@ export default function HouseProfileScreen() {
               <View className="flex-row items-center justify-between py-2 border-b border-gray-100">
                 <View className="flex-row items-center gap-2">
                   <MapPin size={16} color="#8C8B5F" />
-                  <Text className="text-sm text-[#181811]">Local Area</Text>
+                  <Text className="text-sm text-gray-900">Local Area</Text>
                 </View>
                 <View className="flex-row items-center gap-2">
-                  <Text className="text-sm font-bold text-[#181811]">
+                  <Text className="text-sm font-bold text-gray-900">
                     {profileData.localArea.highlights.length} places
                   </Text>
                   {profileData.localArea.overview && <CheckCircle size={14} color="#34C759" />}
@@ -1307,10 +1311,10 @@ export default function HouseProfileScreen() {
               <View className="flex-row items-center justify-between py-2">
                 <View className="flex-row items-center gap-2">
                   <Gamepad2 size={16} color="#8C8B5F" />
-                  <Text className="text-sm text-[#181811]">House Rules & Fun</Text>
+                  <Text className="text-sm text-gray-900">House Rules & Fun</Text>
                 </View>
                 <View className="flex-row items-center gap-2">
-                  <Text className="text-sm font-bold text-[#181811]">
+                  <Text className="text-sm font-bold text-gray-900">
                     {profileData.houseRules.length} rules
                   </Text>
                   {profileData.houseRules.length > 0 && <CheckCircle size={14} color="#34C759" />}
@@ -1332,7 +1336,7 @@ export default function HouseProfileScreen() {
             )}
             <TouchableOpacity
               className={`w-full rounded-2xl py-4 items-center ${
-                isReadyToPublish ? 'bg-[#F9F506]' : 'bg-gray-200'
+                isReadyToPublish ? 'bg-accent-500' : 'bg-gray-200'
               }`}
               onPress={isReadyToPublish ? publishProfile : undefined}
               activeOpacity={isReadyToPublish ? 0.8 : 1}
@@ -1340,14 +1344,14 @@ export default function HouseProfileScreen() {
             >
               <Text
                 className={`font-bold text-base ${
-                  isReadyToPublish ? 'text-[#181811]' : 'text-gray-400'
+                  isReadyToPublish ? 'text-gray-900' : 'text-gray-400'
                 }`}
               >
                 Publish Profile
               </Text>
               <Text
                 className={`text-sm mt-0.5 ${
-                  isReadyToPublish ? 'text-[#181811]/70' : 'text-gray-400'
+                  isReadyToPublish ? 'text-gray-900/70' : 'text-gray-400'
                 }`}
               >
                 Make visible to children in your care
@@ -1369,15 +1373,15 @@ export default function HouseProfileScreen() {
             </SunbeamSurface>
 
             <TouchableOpacity
-              className="w-full bg-[#F9F506] rounded-2xl py-4 items-center"
+              className="w-full bg-accent-500 rounded-2xl py-4 items-center"
               onPress={() => router.push('/(foster_carer)/view-house-profile')}
               activeOpacity={0.8}
               accessibilityRole="button"
               accessibilityLabel="View your published house profile"
             >
               <View className="flex-row items-center">
-                <Eye size={20} color="#181811" />
-                <Text className="text-[#181811] font-bold text-base ml-2">View Profile</Text>
+                <Eye size={20} color={THEME.colors.text.primary} />
+                <Text className="text-gray-900 font-bold text-base ml-2">View Profile</Text>
               </View>
             </TouchableOpacity>
           </Animated.View>
@@ -1417,15 +1421,15 @@ export default function HouseProfileScreen() {
   const getStepIcon = () => {
     const icons = [Home, Users, Clock, Gamepad2, CheckCircle];
     const Icon = icons[currentStep - 1];
-    return <Icon size={24} color="#34C759" />;
+    return <Icon size={24} color={THEME.colors.text.primary} />;
   };
 
   if (loading) {
     return (
       <SafeAreaView className="flex-1 bg-[#F8F8F5]">
         <View className="flex-1 items-center justify-center">
-          <ActivityIndicator size="large" color="#F9F506" />
-          <Text className="mt-4 text-sm text-[#8C8B5F]">Loading your profile...</Text>
+          <ActivityIndicator size="large" color={THEME.colors.accent} />
+          <Text className="mt-4 text-sm text-gray-500">Loading your profile...</Text>
         </View>
       </SafeAreaView>
     );
@@ -1438,20 +1442,20 @@ export default function HouseProfileScreen() {
         <View className="bg-white border-b border-black/5 px-4 pt-4 pb-4">
           <View className="flex-row items-center justify-between mb-3">
             <View className="flex-row items-center flex-1">
-              <View className="w-10 h-10 rounded-xl bg-[#F9F506]/20 items-center justify-center mr-3">
+              <View className="w-10 h-10 rounded-xl bg-accent-500/20 items-center justify-center mr-3">
                 {getStepIcon()}
               </View>
               <View className="flex-1">
-                <Text className="text-xs font-bold text-[#8C8B5F] uppercase tracking-wider mb-0.5">
+                <Text className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-0.5">
                   House Profile
                 </Text>
-                <Text className="text-lg font-bold text-[#181811]" numberOfLines={1}>
+                <Text className="text-lg font-bold text-gray-900" numberOfLines={1}>
                   {getStepTitle()}
                 </Text>
               </View>
             </View>
-            <View className="bg-[#F9F506]/10 rounded-full px-3 py-1">
-              <Text className="text-xs font-bold text-[#181811]">{currentStep}/5</Text>
+            <View className="bg-accent-500/10 rounded-full px-3 py-1">
+              <Text className="text-xs font-bold text-gray-900">{currentStep}/5</Text>
             </View>
           </View>
 
@@ -1461,7 +1465,7 @@ export default function HouseProfileScreen() {
               <View
                 key={step}
                 className={`h-1.5 flex-1 rounded-full ${
-                  step <= currentStep ? 'bg-[#F9F506]' : 'bg-gray-100'
+                  step <= currentStep ? 'bg-accent-500' : 'bg-gray-100'
                 }`}
               />
             ))}
@@ -1485,16 +1489,16 @@ export default function HouseProfileScreen() {
                   onPress={() => router.push('/(foster_carer)/preview-house-profile')}
                   activeOpacity={0.7}
                 >
-                  <Eye size={14} color="#181811" />
-                  <Text className="ml-2 text-xs font-bold text-[#181811]">Preview</Text>
+                  <Eye size={14} color={THEME.colors.text.primary} />
+                  <Text className="ml-2 text-xs font-bold text-gray-900">Preview</Text>
                 </TouchableOpacity>
               </View>
 
               {uploading && (
                 <SunbeamSurface className="mb-4">
                   <View className="p-4 flex-row items-center">
-                    <ActivityIndicator size="small" color="#F9F506" />
-                    <Text className="ml-3 text-sm text-[#181811]">Uploading photo...</Text>
+                    <ActivityIndicator size="small" color={THEME.colors.accent} />
+                    <Text className="ml-3 text-sm text-gray-900">Uploading photo...</Text>
                   </View>
                 </SunbeamSurface>
               )}
@@ -1514,8 +1518,8 @@ export default function HouseProfileScreen() {
                 activeOpacity={0.7}
               >
                 <View className="flex-row items-center">
-                  <ChevronLeft size={18} color="#181811" />
-                  <Text className="text-[#181811] font-bold ml-1">Back</Text>
+                  <ChevronLeft size={18} color={THEME.colors.text.primary} />
+                  <Text className="text-gray-900 font-bold ml-1">Back</Text>
                 </View>
               </TouchableOpacity>
             )}
@@ -1523,7 +1527,7 @@ export default function HouseProfileScreen() {
             <TouchableOpacity
               className={`${
                 currentStep > 1 ? 'flex-1' : 'w-full'
-              } bg-[#F9F506] rounded-xl py-4 items-center`}
+              } bg-accent-500 rounded-xl py-4 items-center`}
               activeOpacity={0.8}
               onPress={
                 currentStep === 5
@@ -1534,9 +1538,11 @@ export default function HouseProfileScreen() {
               }
             >
               <View className="flex-row items-center">
-                {currentStep === 5 && profileData.isPublished && <Eye size={18} color="#181811" />}
+                {currentStep === 5 && profileData.isPublished && (
+                  <Eye size={18} color={THEME.colors.text.primary} />
+                )}
                 <Text
-                  className={`text-[#181811] font-bold text-base ${currentStep === 5 && profileData.isPublished ? 'ml-2' : ''}`}
+                  className={`text-gray-900 font-bold text-base ${currentStep === 5 && profileData.isPublished ? 'ml-2' : ''}`}
                 >
                   {currentStep === 5
                     ? profileData.isPublished
@@ -1544,7 +1550,9 @@ export default function HouseProfileScreen() {
                       : 'Publish'
                     : 'Continue'}
                 </Text>
-                {currentStep < 5 && <ChevronRight size={18} color="#181811" className="ml-1" />}
+                {currentStep < 5 && (
+                  <ChevronRight size={18} color={THEME.colors.text.primary} className="ml-1" />
+                )}
               </View>
             </TouchableOpacity>
           </View>
@@ -1564,10 +1572,10 @@ export default function HouseProfileScreen() {
             <View className="w-20 h-20 rounded-full bg-green-100 items-center justify-center mb-4">
               <CheckCircle size={40} color="#10B981" />
             </View>
-            <Text className="text-2xl font-bold text-[#181811] text-center mb-2">
+            <Text className="text-2xl font-bold text-gray-900 text-center mb-2">
               Profile Published!
             </Text>
-            <Text className="text-base text-[#8C8B5F] text-center mb-6 leading-relaxed">
+            <Text className="text-base text-gray-500 text-center mb-6 leading-relaxed">
               Your house profile is now visible to children in your care. They can explore your home
               and get to know your family.
             </Text>
@@ -1577,12 +1585,12 @@ export default function HouseProfileScreen() {
                   setShowCelebration(false);
                   router.push('/(foster_carer)/view-house-profile');
                 }}
-                className="w-full bg-[#F9F506] rounded-xl py-4 items-center"
+                className="w-full bg-accent-500 rounded-xl py-4 items-center"
                 activeOpacity={0.8}
               >
                 <View className="flex-row items-center">
-                  <Eye size={18} color="#181811" />
-                  <Text className="text-[#181811] font-bold ml-2">View Your Profile</Text>
+                  <Eye size={18} color={THEME.colors.text.primary} />
+                  <Text className="text-gray-900 font-bold ml-2">View Your Profile</Text>
                 </View>
               </TouchableOpacity>
               <TouchableOpacity
@@ -1590,7 +1598,7 @@ export default function HouseProfileScreen() {
                 className="w-full py-3 items-center"
                 activeOpacity={0.7}
               >
-                <Text className="text-[#8C8B5F] font-medium">Continue Editing</Text>
+                <Text className="text-gray-500 font-medium">Continue Editing</Text>
               </TouchableOpacity>
             </View>
           </Animated.View>

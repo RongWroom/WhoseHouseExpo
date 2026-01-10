@@ -84,7 +84,7 @@ export default function SocialWorkerSettingsScreen() {
 
   return (
     <Screen
-      backgroundColor="bg-gray-50"
+      backgroundColor="bg-[#F8F8F5]"
       scroll
       scrollProps={{ showsVerticalScrollIndicator: false }}
     >

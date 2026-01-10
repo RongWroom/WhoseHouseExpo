@@ -27,6 +27,7 @@ import { Text } from '../../src/components/ui';
 import { SunbeamSurface } from '../../src/components/sunbeam';
 import { useAuth } from '../../src/contexts/AuthContext';
 import { supabase } from '../../src/lib/supabase';
+import { THEME } from '../../src/lib/theme';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -150,8 +151,8 @@ export default function ViewHouseProfileScreen() {
   if (authLoading || isLoading || !hasAttemptedLoad) {
     return (
       <View className="flex-1 items-center justify-center bg-[#F8F8F5]">
-        <ActivityIndicator size="large" color="#F9F506" />
-        <Text className="mt-4 text-sm text-[#8C8B5F]">Loading profile...</Text>
+        <ActivityIndicator size="large" color={THEME.colors.accent} />
+        <Text className="mt-4 text-sm text-gray-500">Loading profile...</Text>
       </View>
     );
   }
@@ -163,15 +164,13 @@ export default function ViewHouseProfileScreen() {
         <View className="w-16 h-16 rounded-full bg-gray-100 items-center justify-center mb-4">
           <Home size={32} color="#9CA3AF" />
         </View>
-        <Text className="text-[#8C8B5F] text-center mb-4">
-          Please sign in to view your profile.
-        </Text>
+        <Text className="text-gray-500 text-center mb-4">Please sign in to view your profile.</Text>
         <TouchableOpacity
           onPress={() => router.replace('/(auth)')}
-          className="bg-[#F9F506] px-6 py-3 rounded-full"
+          className="bg-accent-500 px-6 py-3 rounded-full"
           activeOpacity={0.8}
         >
-          <Text className="text-[#181811] font-bold">Sign In</Text>
+          <Text className="text-gray-900 font-bold">Sign In</Text>
         </TouchableOpacity>
       </SafeAreaView>
     );
@@ -196,19 +195,19 @@ export default function ViewHouseProfileScreen() {
         <View className="w-20 h-20 rounded-full bg-gray-100 items-center justify-center mb-4">
           <Home size={40} color="#9CA3AF" />
         </View>
-        <Text className="text-lg font-bold text-[#181811] mb-2">No Profile Yet</Text>
-        <Text className="text-[#8C8B5F] text-center mb-6">
+        <Text className="text-lg font-bold text-gray-900 mb-2">No Profile Yet</Text>
+        <Text className="text-gray-500 text-center mb-6">
           Create your house profile to share with children.
         </Text>
         <TouchableOpacity
           onPress={() => router.push('/(foster_carer)/(tabs)/house-profile')}
-          className="bg-[#F9F506] px-6 py-3 rounded-full mb-3"
+          className="bg-accent-500 px-6 py-3 rounded-full mb-3"
           activeOpacity={0.8}
         >
-          <Text className="text-[#181811] font-bold">Create Profile</Text>
+          <Text className="text-gray-900 font-bold">Create Profile</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => router.back()} className="px-6 py-2" activeOpacity={0.7}>
-          <Text className="text-[#8C8B5F] font-medium">Go Back</Text>
+          <Text className="text-gray-500 font-medium">Go Back</Text>
         </TouchableOpacity>
       </SafeAreaView>
     );
@@ -238,7 +237,7 @@ export default function ViewHouseProfileScreen() {
                     {/* Gradient overlay */}
                     <View className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
                     <View className="absolute bottom-4 left-4 bg-white/95 px-3 py-1.5 rounded-full shadow-sm">
-                      <Text className="text-[#181811] text-xs font-bold">
+                      <Text className="text-gray-900 text-xs font-bold">
                         {CATEGORY_LABELS[photo.category] || photo.category}
                       </Text>
                     </View>
@@ -278,7 +277,7 @@ export default function ViewHouseProfileScreen() {
                 accessibilityLabel="Go back"
                 activeOpacity={0.8}
               >
-                <ChevronLeft size={22} color="#181811" />
+                <ChevronLeft size={22} color={THEME.colors.text.primary} />
               </TouchableOpacity>
               <View className="flex-row gap-2">
                 <TouchableOpacity
@@ -287,16 +286,16 @@ export default function ViewHouseProfileScreen() {
                   accessibilityLabel="Share profile"
                   activeOpacity={0.8}
                 >
-                  <Share2 size={18} color="#181811" />
+                  <Share2 size={18} color={THEME.colors.text.primary} />
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={() => router.push('/(foster_carer)/(tabs)/house-profile')}
-                  className="w-11 h-11 rounded-full bg-[#F9F506] items-center justify-center shadow-md"
+                  className="w-11 h-11 rounded-full bg-accent-500 items-center justify-center shadow-md"
                   accessibilityRole="button"
                   accessibilityLabel="Edit profile"
                   activeOpacity={0.8}
                 >
-                  <Edit3 size={18} color="#181811" />
+                  <Edit3 size={18} color={THEME.colors.text.primary} />
                 </TouchableOpacity>
               </View>
             </View>
@@ -307,7 +306,7 @@ export default function ViewHouseProfileScreen() {
         <View className="px-4 pt-5 pb-8 -mt-4 bg-[#F8F8F5] rounded-t-3xl">
           {/* Title Section */}
           <Animated.View entering={FadeIn.duration(300)} className="mb-5">
-            <Text className="text-2xl font-bold text-[#181811] mb-2">
+            <Text className="text-2xl font-bold text-gray-900 mb-2">
               {userProfile?.full_name ? `${userProfile.full_name}'s Home` : 'Our Home'}
             </Text>
             <View className="flex-row items-center">
@@ -315,7 +314,7 @@ export default function ViewHouseProfileScreen() {
                 <CheckCircle size={14} color="#10B981" />
                 <Text className="text-xs font-bold text-green-700 ml-1">Published</Text>
               </View>
-              <Text className="text-xs text-[#8C8B5F] ml-2">Ready for children to view</Text>
+              <Text className="text-xs text-gray-500 ml-2">Ready for children to view</Text>
             </View>
           </Animated.View>
 
@@ -326,13 +325,13 @@ export default function ViewHouseProfileScreen() {
           >
             <SunbeamSurface className="flex-1">
               <View className="p-4 items-center">
-                <View className="w-10 h-10 rounded-full bg-[#F9F506]/20 items-center justify-center mb-2">
-                  <Users size={20} color="#181811" />
+                <View className="w-10 h-10 rounded-full bg-accent-500/20 items-center justify-center mb-2">
+                  <Users size={20} color={THEME.colors.text.primary} />
                 </View>
-                <Text className="text-xl font-bold text-[#181811]">
+                <Text className="text-xl font-bold text-gray-900">
                   {profileData.householdMembers.length}
                 </Text>
-                <Text className="text-xs text-[#8C8B5F]">People</Text>
+                <Text className="text-xs text-gray-500">People</Text>
               </View>
             </SunbeamSurface>
             <SunbeamSurface className="flex-1">
@@ -340,8 +339,8 @@ export default function ViewHouseProfileScreen() {
                 <View className="w-10 h-10 rounded-full bg-blue-50 items-center justify-center mb-2">
                   <Home size={20} color="#1d4ed8" />
                 </View>
-                <Text className="text-xl font-bold text-[#181811]">{sortedPhotos.length}</Text>
-                <Text className="text-xs text-[#8C8B5F]">Photos</Text>
+                <Text className="text-xl font-bold text-gray-900">{sortedPhotos.length}</Text>
+                <Text className="text-xs text-gray-500">Photos</Text>
               </View>
             </SunbeamSurface>
             <SunbeamSurface className="flex-1">
@@ -349,10 +348,10 @@ export default function ViewHouseProfileScreen() {
                 <View className="w-10 h-10 rounded-full bg-pink-50 items-center justify-center mb-2">
                   <Heart size={20} color="#ec4899" />
                 </View>
-                <Text className="text-xl font-bold text-[#181811]">
+                <Text className="text-xl font-bold text-gray-900">
                   {profileData.houseRules.length}
                 </Text>
-                <Text className="text-xs text-[#8C8B5F]">Rules</Text>
+                <Text className="text-xs text-gray-500">Rules</Text>
               </View>
             </SunbeamSurface>
           </Animated.View>
@@ -361,10 +360,10 @@ export default function ViewHouseProfileScreen() {
           {profileData.householdMembers.length > 0 && (
             <Animated.View entering={FadeInDown.delay(200).duration(300)} className="mb-6">
               <View className="flex-row items-center gap-2 mb-3">
-                <View className="w-8 h-8 rounded-lg bg-[#F9F506]/20 items-center justify-center">
-                  <Users size={16} color="#181811" />
+                <View className="w-8 h-8 rounded-lg bg-accent-500/20 items-center justify-center">
+                  <Users size={16} color={THEME.colors.text.primary} />
                 </View>
-                <Text className="text-lg font-bold text-[#181811]">Who Lives Here</Text>
+                <Text className="text-lg font-bold text-gray-900">Who Lives Here</Text>
               </View>
 
               <SunbeamSurface>
@@ -374,23 +373,23 @@ export default function ViewHouseProfileScreen() {
                       key={member.id}
                       className={`flex-row items-start ${index > 0 ? 'mt-4 pt-4 border-t border-gray-100' : ''}`}
                     >
-                      <View className="w-14 h-14 rounded-2xl bg-[#F9F506]/10 items-center justify-center mr-4">
-                        <Text className="text-xl font-bold text-[#181811]">
+                      <View className="w-14 h-14 rounded-2xl bg-accent-500/10 items-center justify-center mr-4">
+                        <Text className="text-xl font-bold text-gray-900">
                           {member.name ? member.name.charAt(0).toUpperCase() : '?'}
                         </Text>
                       </View>
                       <View className="flex-1">
-                        <Text className="text-base font-bold text-[#181811]">
+                        <Text className="text-base font-bold text-gray-900">
                           {member.name || 'Unnamed'}
                         </Text>
                         {member.relationshipLabel && (
-                          <Text className="text-sm text-[#8C8B5F] font-medium">
+                          <Text className="text-sm text-gray-500 font-medium">
                             {member.relationshipLabel}
                             {member.age ? ` • ${member.age}` : ''}
                           </Text>
                         )}
                         {member.description && (
-                          <Text className="text-sm text-[#8C8B5F] mt-1 leading-relaxed">
+                          <Text className="text-sm text-gray-500 mt-1 leading-relaxed">
                             {member.description}
                           </Text>
                         )}
@@ -409,13 +408,13 @@ export default function ViewHouseProfileScreen() {
                 <View className="w-8 h-8 rounded-lg bg-blue-50 items-center justify-center">
                   <MapPin size={16} color="#1d4ed8" />
                 </View>
-                <Text className="text-lg font-bold text-[#181811]">Local Area</Text>
+                <Text className="text-lg font-bold text-gray-900">Local Area</Text>
               </View>
 
               <SunbeamSurface>
                 <View className="p-4">
                   {profileData.localArea.overview && (
-                    <Text className="text-sm text-[#181811] leading-relaxed mb-4">
+                    <Text className="text-sm text-gray-900 leading-relaxed mb-4">
                       {profileData.localArea.overview}
                     </Text>
                   )}
@@ -446,7 +445,7 @@ export default function ViewHouseProfileScreen() {
                 <View className="w-8 h-8 rounded-lg bg-amber-50 items-center justify-center">
                   <Sparkles size={16} color="#d97706" />
                 </View>
-                <Text className="text-lg font-bold text-[#181811]">House Rules</Text>
+                <Text className="text-lg font-bold text-gray-900">House Rules</Text>
               </View>
 
               <SunbeamSurface className="bg-amber-50/50">
@@ -456,7 +455,7 @@ export default function ViewHouseProfileScreen() {
                       <View className="w-5 h-5 rounded-full bg-amber-100 items-center justify-center mr-2 mt-0.5">
                         <Text className="text-xs font-bold text-amber-700">{index + 1}</Text>
                       </View>
-                      <Text className="text-sm text-[#181811] flex-1">{rule}</Text>
+                      <Text className="text-sm text-gray-900 flex-1">{rule}</Text>
                     </View>
                   ))}
                 </View>
@@ -473,7 +472,7 @@ export default function ViewHouseProfileScreen() {
                 <View className="w-8 h-8 rounded-lg bg-purple-50 items-center justify-center">
                   <Gamepad2 size={16} color="#7c3aed" />
                 </View>
-                <Text className="text-lg font-bold text-[#181811]">Things We Enjoy</Text>
+                <Text className="text-lg font-bold text-gray-900">Things We Enjoy</Text>
               </View>
 
               <SunbeamSurface>
@@ -482,7 +481,7 @@ export default function ViewHouseProfileScreen() {
                     <View className="mb-4">
                       <View className="flex-row items-center gap-2 mb-2">
                         <Tv size={14} color="#8C8B5F" />
-                        <Text className="text-xs font-bold text-[#8C8B5F] uppercase tracking-wider">
+                        <Text className="text-xs font-bold text-gray-500 uppercase tracking-wider">
                           TV & YouTube
                         </Text>
                       </View>
@@ -506,7 +505,7 @@ export default function ViewHouseProfileScreen() {
                     >
                       <View className="flex-row items-center gap-2 mb-2">
                         <Gamepad2 size={14} color="#8C8B5F" />
-                        <Text className="text-xs font-bold text-[#8C8B5F] uppercase tracking-wider">
+                        <Text className="text-xs font-bold text-gray-500 uppercase tracking-wider">
                           Games We Play
                         </Text>
                       </View>
@@ -531,7 +530,7 @@ export default function ViewHouseProfileScreen() {
                     >
                       <View className="flex-row items-center gap-2 mb-2">
                         <Heart size={14} color="#8C8B5F" />
-                        <Text className="text-xs font-bold text-[#8C8B5F] uppercase tracking-wider">
+                        <Text className="text-xs font-bold text-gray-500 uppercase tracking-wider">
                           Hobbies & Fun
                         </Text>
                       </View>
@@ -553,14 +552,14 @@ export default function ViewHouseProfileScreen() {
           <Animated.View entering={FadeInDown.delay(600).duration(300)}>
             <TouchableOpacity
               onPress={() => router.push('/(foster_carer)/(tabs)/house-profile')}
-              className="bg-[#F9F506] rounded-2xl py-4 items-center"
+              className="bg-accent-500 rounded-2xl py-4 items-center"
               accessibilityRole="button"
               accessibilityLabel="Edit house profile"
               activeOpacity={0.8}
             >
               <View className="flex-row items-center">
-                <Edit3 size={18} color="#181811" />
-                <Text className="text-[#181811] font-bold text-base ml-2">Edit Profile</Text>
+                <Edit3 size={18} color={THEME.colors.text.primary} />
+                <Text className="text-gray-900 font-bold text-base ml-2">Edit Profile</Text>
               </View>
             </TouchableOpacity>
           </Animated.View>

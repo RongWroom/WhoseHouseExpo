@@ -69,7 +69,7 @@ export default function MessagesScreen() {
 
   // Show list of cases to message
   return (
-    <Screen backgroundColor="bg-gray-50">
+    <Screen backgroundColor="bg-[#F8F8F5]">
       <Container className="py-4">
         <TitleBar
           title="Messages"

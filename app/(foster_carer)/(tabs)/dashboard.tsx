@@ -123,7 +123,7 @@ export default function FosterCarerDashboard() {
   // Show loading state
   if (loading) {
     return (
-      <Screen backgroundColor="bg-gray-50">
+      <Screen backgroundColor="bg-[#F8F8F5]">
         <View className="flex-1 items-center justify-center">
           <ActivityIndicator size="large" color={fosterCarerColor} />
           <Text variant="body" color="muted" className="mt-4">
@@ -137,7 +137,7 @@ export default function FosterCarerDashboard() {
   // Show error state
   if (error) {
     return (
-      <Screen backgroundColor="bg-gray-50">
+      <Screen backgroundColor="bg-[#F8F8F5]">
         <Container className="flex-1 justify-center">
           <Card variant="elevated">
             <CardContent className="items-center py-8">
@@ -158,7 +158,7 @@ export default function FosterCarerDashboard() {
   // Show no active case state
   if (!caseData) {
     return (
-      <Screen backgroundColor="bg-gray-50">
+      <Screen backgroundColor="bg-[#F8F8F5]">
         <Container className="flex-1 justify-center px-6">
           <View className="items-center">
             <View className="w-24 h-24 rounded-full bg-foster-carer-100 items-center justify-center mb-6">
@@ -249,17 +249,33 @@ export default function FosterCarerDashboard() {
           <SunbeamSurface className="" contentClassName="p-4">
             <View className="flex-row items-start justify-between mb-4">
               <View className="flex-1 pr-4">
-                <Text className="text-sm font-semibold text-[#8C8B5F] uppercase tracking-wider mb-1">
+                <Text
+                  className="text-sm font-semibold uppercase tracking-wider mb-1"
+                  style={{ color: THEME.colors.text.secondary }}
+                >
                   Your Social Worker
                 </Text>
-                <Text className="text-xl font-bold text-[#181811]">{socialWorkerName}</Text>
+                <Text className="text-xl font-bold" style={{ color: THEME.colors.text.primary }}>
+                  {socialWorkerName}
+                </Text>
                 <View className="flex-row items-center gap-1 mt-1">
-                  <View className="w-2 h-2 rounded-full bg-green-500" />
-                  <Text className="text-xs font-medium text-[#8C8B5F]">Available Now</Text>
+                  <View
+                    className="w-2 h-2 rounded-full"
+                    style={{ backgroundColor: THEME.colors.success }}
+                  />
+                  <Text
+                    className="text-xs font-medium"
+                    style={{ color: THEME.colors.text.secondary }}
+                  >
+                    Available Now
+                  </Text>
                 </View>
               </View>
 
-              <View className="rounded-full border-4 border-[#F8F8F5] overflow-hidden">
+              <View
+                className="rounded-full border-4 overflow-hidden"
+                style={{ borderColor: THEME.colors.background.primary }}
+              >
                 <Avatar
                   source={socialWorkerAvatar}
                   initials={socialWorkerInitials}
@@ -272,24 +288,31 @@ export default function FosterCarerDashboard() {
             <View className="flex-row gap-3">
               <Pressable
                 onPress={handleCallSocialWorker}
-                className="flex-1 h-12 rounded-full bg-[#F9F506] items-center justify-center flex-row gap-2 shadow-sm active:opacity-80"
+                className="flex-1 h-12 rounded-full items-center justify-center flex-row gap-2 shadow-sm active:opacity-80"
+                style={{ backgroundColor: THEME.colors.primary }}
                 accessibilityRole="button"
                 accessibilityLabel={`Call ${socialWorkerName}`}
               >
-                <Phone size={18} color="#111827" />
-                <Text className="text-black font-bold text-sm">
+                <Phone size={18} color={THEME.colors.onPrimary} />
+                <Text className="font-bold text-sm" style={{ color: THEME.colors.onPrimary }}>
                   Call {socialWorkerName.split(' ')[0]}
                 </Text>
               </Pressable>
 
               <Pressable
                 onPress={handleMessageSocialWorker}
-                className="flex-1 h-12 rounded-full bg-[#F8F8F5] items-center justify-center flex-row gap-2 border border-black/5 active:opacity-80"
+                className="flex-1 h-12 rounded-full items-center justify-center flex-row gap-2 border active:opacity-80"
+                style={{
+                  backgroundColor: THEME.colors.background.primary,
+                  borderColor: THEME.colors.border,
+                }}
                 accessibilityRole="button"
                 accessibilityLabel={`Message ${socialWorkerName}`}
               >
-                <MessageCircle size={18} color="#111827" />
-                <Text className="text-[#181811] font-bold text-sm">Message</Text>
+                <MessageCircle size={18} color={THEME.colors.text.primary} />
+                <Text className="font-bold text-sm" style={{ color: THEME.colors.text.primary }}>
+                  Message
+                </Text>
               </Pressable>
             </View>
           </SunbeamSurface>
@@ -297,20 +320,22 @@ export default function FosterCarerDashboard() {
 
         {/* Quick Actions */}
         <View className="mb-6">
-          <Text className="text-lg font-bold text-[#181811] mb-3">Quick Actions</Text>
+          <Text className="text-lg font-bold mb-3" style={{ color: THEME.colors.text.primary }}>
+            Quick Actions
+          </Text>
 
           <View className="flex-row gap-3">
             <SunbeamActionTile
               onPress={handleDailyLog}
-              icon={<ClipboardList size={20} color="#181811" />}
-              iconContainerClassName="bg-[#F9F506]/20"
+              icon={<ClipboardList size={20} color={THEME.colors.accentMuted} />}
+              iconContainerClassName="bg-accent-100"
               title="Add Daily Log"
               subtitle="Record today's updates"
             />
 
             <SunbeamActionTile
               onPress={handleCalendar}
-              icon={<CalendarDays size={20} color="#1d4ed8" />}
+              icon={<CalendarDays size={20} color={THEME.colors.info} />}
               iconContainerClassName="bg-blue-100"
               title="Calendar"
               subtitle="Next: Dentist 2pm"

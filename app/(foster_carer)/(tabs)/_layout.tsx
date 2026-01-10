@@ -5,6 +5,7 @@ import { useAuth } from '../../../src/contexts/AuthContext';
 import { useUnreadMessageCount } from '../../../src/hooks/useUnreadMessageCount';
 import { Redirect } from 'expo-router';
 import { useCallback } from 'react';
+import { THEME } from '../../../src/lib/theme';
 
 const badgeStyles = StyleSheet.create({
   badge: {
@@ -86,21 +87,26 @@ export default function FosterCarerTabsLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: '#34C759',
-        tabBarInactiveTintColor: '#666',
+        tabBarActiveTintColor: THEME.colors.primary,
+        tabBarInactiveTintColor: '#9CA3AF',
         tabBarStyle: {
           backgroundColor: 'white',
           borderTopWidth: 1,
-          borderTopColor: '#e0e0e0',
+          borderTopColor: '#F3F4F6',
           paddingBottom: 5,
           height: 60,
         },
         headerStyle: {
-          backgroundColor: '#34C759',
+          backgroundColor: '#FFFFFF',
+          shadowColor: 'transparent',
+          elevation: 0,
+          borderBottomWidth: 1,
+          borderBottomColor: '#F3F4F6',
         },
-        headerTintColor: 'white',
+        headerTintColor: THEME.colors.text.primary,
         headerTitleStyle: {
-          fontWeight: 'bold',
+          fontWeight: '600',
+          color: THEME.colors.text.primary,
         },
       }}
     >

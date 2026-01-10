@@ -276,7 +276,7 @@ export default function AuditLogsScreen() {
 
   if (loading) {
     return (
-      <Screen backgroundColor="bg-gray-50">
+      <Screen backgroundColor="bg-[#F8F8F5]">
         <View className="flex-1 items-center justify-center">
           <LoadingSpinner size="large" />
           <Text variant="body" color="muted" className="mt-3">
@@ -288,7 +288,7 @@ export default function AuditLogsScreen() {
   }
 
   return (
-    <Screen backgroundColor="bg-gray-50">
+    <Screen backgroundColor="bg-[#F8F8F5]">
       <SafeAreaView edges={['top']} className="flex-1">
         <Container className="py-4 flex-1">
           <TitleBar

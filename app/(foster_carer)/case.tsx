@@ -61,7 +61,7 @@ export default function FosterCarerCaseScreen() {
   // Show loading state
   if (loading) {
     return (
-      <Screen backgroundColor="bg-gray-50">
+      <Screen backgroundColor="bg-[#F8F8F5]">
         <View className="flex-1 items-center justify-center">
           <ActivityIndicator size="large" color={fosterCarerColor} />
           <Text variant="body" color="muted" className="mt-4">
@@ -75,7 +75,7 @@ export default function FosterCarerCaseScreen() {
   // Show error state
   if (error) {
     return (
-      <Screen backgroundColor="bg-gray-50">
+      <Screen backgroundColor="bg-[#F8F8F5]">
         <Container className="flex-1 justify-center">
           <Card variant="elevated">
             <CardContent className="items-center py-8">
@@ -96,7 +96,7 @@ export default function FosterCarerCaseScreen() {
   // Show no active case state
   if (!caseData) {
     return (
-      <Screen backgroundColor="bg-gray-50">
+      <Screen backgroundColor="bg-[#F8F8F5]">
         <Container className="flex-1 justify-center px-6">
           <View className="items-center">
             <View className="w-24 h-24 rounded-full bg-foster-carer-100 items-center justify-center mb-6">
@@ -142,18 +142,8 @@ export default function FosterCarerCaseScreen() {
   const childInitials = caseData.child_name || 'Child';
 
   return (
-    <Screen scroll backgroundColor="bg-gray-50">
-      <Container className="py-6">
-        {/* Header */}
-        <View className="mb-6">
-          <Text variant="h2" weight="bold" className="mb-2">
-            Case Details
-          </Text>
-          <Text variant="body" color="muted">
-            Information about your current placement
-          </Text>
-        </View>
-
+    <Screen scroll backgroundColor="bg-[#F8F8F5]">
+      <Container className="py-4">
         {/* Case Information Card */}
         <View className="mb-6">
           <Text variant="h3" weight="semibold" className="mb-3">
@@ -272,26 +262,30 @@ export default function FosterCarerCaseScreen() {
               {/* Quick Actions */}
               <View className="flex-row gap-3 mt-4">
                 <Pressable
-                  onPress={handleMessageSocialWorker}
-                  className="flex-1 bg-foster-carer-500 rounded-lg py-3 items-center active:opacity-70"
-                  accessibilityRole="button"
-                  accessibilityLabel="Message social worker"
-                >
-                  <View className="flex-row items-center">
-                    <MessageCircle size={20} color="white" />
-                    <Text className="text-white font-medium ml-2">Message</Text>
-                  </View>
-                </Pressable>
-
-                <Pressable
                   onPress={handleCallSocialWorker}
-                  className="flex-1 bg-foster-carer-500 rounded-lg py-3 items-center active:opacity-70"
+                  className="flex-1 rounded-full py-3 items-center active:opacity-80"
+                  style={{ backgroundColor: THEME.colors.primary }}
                   accessibilityRole="button"
                   accessibilityLabel="Call social worker"
                 >
                   <View className="flex-row items-center">
-                    <Phone size={20} color="white" />
-                    <Text className="text-white font-medium ml-2">Call</Text>
+                    <Phone size={18} color="white" />
+                    <Text className="text-white font-bold ml-2">Call</Text>
+                  </View>
+                </Pressable>
+
+                <Pressable
+                  onPress={handleMessageSocialWorker}
+                  className="flex-1 rounded-full py-3 items-center active:opacity-80 border bg-white"
+                  style={{ borderColor: THEME.colors.border }}
+                  accessibilityRole="button"
+                  accessibilityLabel="Message social worker"
+                >
+                  <View className="flex-row items-center">
+                    <MessageCircle size={18} color={THEME.colors.text.primary} />
+                    <Text style={{ color: THEME.colors.text.primary }} className="font-bold ml-2">
+                      Message
+                    </Text>
                   </View>
                 </Pressable>
               </View>

@@ -75,7 +75,7 @@ export default function FosterCarerSettingsScreen() {
   };
 
   return (
-    <Screen backgroundColor="bg-gray-50">
+    <Screen backgroundColor="bg-[#F8F8F5]">
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         <Container className="py-6">
           <TitleBar

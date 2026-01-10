@@ -1,6 +1,29 @@
 /**
  * Theme constants for WhoseHouse app
  * Defines role-based colors, spacing, and accessibility defaults
+ *
+ * COLOR USAGE GUIDELINES:
+ * ─────────────────────────────────────────────────────────────
+ *
+ * ROLE COLORS (use for role-specific UI elements):
+ * - socialWorker: Blue (#007AFF) - Social worker interfaces, avatars, buttons
+ * - fosterCarer: Green (#34C759) - Foster carer interfaces, avatars, buttons
+ * - child: Teal (#14B8A6) - Child interfaces (softer, friendlier)
+ *
+ * SEMANTIC COLORS (use for meaning/status):
+ * - primary: Main brand/action color (teal-green)
+ * - accent: Highlight/emphasis color (warm amber - replaces bright yellow)
+ * - success: Positive actions, confirmations
+ * - warning: Caution states
+ * - danger: Errors, destructive actions
+ *
+ * NEUTRAL COLORS (use for structure):
+ * - surface: Card/container backgrounds
+ * - background: Page backgrounds
+ * - border: Dividers, outlines
+ * - text: Primary, secondary, muted text
+ *
+ * ─────────────────────────────────────────────────────────────
  */
 
 export const THEME = {
@@ -8,37 +31,74 @@ export const THEME = {
   roles: {
     socialWorker: {
       primary: '#007AFF',
-      light: '#dbeafe',
-      dark: '#004fa3',
+      light: '#EFF6FF',
+      medium: '#BFDBFE',
+      dark: '#1D4ED8',
     },
     fosterCarer: {
       primary: '#34C759',
-      light: '#dcfce7',
+      light: '#F0FDF4',
+      medium: '#BBF7D0',
       dark: '#166534',
     },
     child: {
-      primary: '#4CAF50',
-      light: '#E8F5E9',
-      dark: '#2E7D32',
+      primary: '#14B8A6', // Teal - softer than harsh green
+      light: '#F0FDFA',
+      medium: '#99F6E4',
+      dark: '#0F766E',
     },
   },
 
-  // Semantic colors
+  // Primary brand colors
   colors: {
-    danger: '#ef4444',
-    warning: '#f59e0b',
-    success: '#22c55e',
-    muted: '#6b7280',
+    // Main action color (teal-green, harmonious with role colors)
+    primary: '#0D9488',
+    onPrimary: '#FFFFFF',
+    primaryLight: '#CCFBF1',
+
+    // Accent color (warm amber - replaces clashing yellow)
+    accent: '#F59E0B',
+    onAccent: '#FFFFFF',
+    accentLight: '#FEF3C7',
+    accentMuted: '#D97706',
+
+    // Semantic status colors
+    success: '#22C55E',
+    successLight: '#DCFCE7',
+    warning: '#F59E0B',
+    warningLight: '#FEF3C7',
+    danger: '#EF4444',
+    dangerLight: '#FEE2E2',
+    info: '#3B82F6',
+    infoLight: '#DBEAFE',
+
+    // Text colors
     text: {
-      primary: '#111827',
-      secondary: '#6b7280',
-      inverse: '#ffffff',
+      primary: '#111827', // Near black - main content
+      secondary: '#4B5563', // Dark gray - supporting text
+      muted: '#9CA3AF', // Medium gray - hints, placeholders
+      inverse: '#FFFFFF', // White - on dark backgrounds
     },
+
+    // Background colors
     background: {
-      primary: '#ffffff',
-      secondary: '#f9fafb',
-      tertiary: '#f3f4f6',
+      primary: '#FFFFFF', // White - main surfaces
+      secondary: '#F9FAFB', // Off-white - page backgrounds
+      tertiary: '#F3F4F6', // Light gray - nested containers
+      warm: '#FEFDFB', // Warm white - softer pages
     },
+
+    // Surface colors (cards, containers)
+    surface: {
+      primary: '#FFFFFF',
+      elevated: '#FFFFFF',
+      muted: '#F9FAFB',
+    },
+
+    // Border colors
+    border: '#E5E7EB',
+    borderLight: '#F3F4F6',
+    borderDark: '#D1D5DB',
   },
 
   // Spacing scale (in px)

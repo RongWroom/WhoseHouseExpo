@@ -310,7 +310,7 @@ export default function SocialWorkerProfileScreen() {
 
   if (isLoading) {
     return (
-      <Screen backgroundColor="bg-gray-50">
+      <Screen backgroundColor="bg-[#F8F8F5]">
         <View className="flex-1 items-center justify-center">
           <ActivityIndicator size="large" color={THEME.roles.socialWorker.primary} />
           <Text variant="body" color="muted" className="mt-4">
@@ -322,7 +322,7 @@ export default function SocialWorkerProfileScreen() {
   }
 
   return (
-    <Screen backgroundColor="bg-gray-50">
+    <Screen backgroundColor="bg-[#F8F8F5]">
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         className="flex-1"

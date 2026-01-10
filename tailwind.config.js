@@ -10,61 +10,117 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Role-based colors per PRD
+        /**
+         * COLOR PALETTE - Keep in sync with src/lib/theme.ts
+         *
+         * Usage:
+         * - Role colors: For role-specific UI (avatars, role buttons)
+         * - Brand colors: For primary actions and accents
+         * - Semantic colors: For status indicators
+         */
+
+        // Role-based colors
         'social-worker': {
-          50: '#eff6ff',
-          100: '#dbeafe',
-          200: '#bfdbfe',
-          300: '#93c5fd',
-          400: '#60a5fa',
-          500: '#007AFF', // Primary social worker blue
-          600: '#0066d6',
-          700: '#004fa3',
-          800: '#003d7a',
-          900: '#002d5a',
+          50: '#EFF6FF',
+          100: '#DBEAFE',
+          200: '#BFDBFE',
+          300: '#93C5FD',
+          400: '#60A5FA',
+          500: '#007AFF', // Primary
+          600: '#0066D6',
+          700: '#1D4ED8',
+          800: '#1E40AF',
+          900: '#1E3A8A',
         },
         'foster-carer': {
-          50: '#f0fdf4',
-          100: '#dcfce7',
-          200: '#bbf7d0',
-          300: '#86efac',
-          400: '#4ade80',
-          500: '#34C759', // Primary foster carer green
-          600: '#2aa048',
+          50: '#F0FDF4',
+          100: '#DCFCE7',
+          200: '#BBF7D0',
+          300: '#86EFAC',
+          400: '#4ADE80',
+          500: '#34C759', // Primary
+          600: '#16A34A',
+          700: '#15803D',
           800: '#166534',
-          900: '#14532d',
+          900: '#14532D',
         },
         child: {
-          50: '#E8F5E9', // Light, friendly green background
-          100: '#C8E6C9',
-          200: '#A5D6A7',
-          300: '#81C784',
-          400: '#66BB6A',
-          500: '#4CAF50', // Primary child green
-          600: '#43A047',
-          700: '#388E3C',
-          800: '#2E7D32',
-          900: '#1B5E20',
+          50: '#F0FDFA',
+          100: '#CCFBF1',
+          200: '#99F6E4',
+          300: '#5EEAD4',
+          400: '#2DD4BF',
+          500: '#14B8A6', // Primary - Teal (softer than green)
+          600: '#0D9488',
+          700: '#0F766E',
+          800: '#115E59',
+          900: '#134E4A',
         },
+
+        // Brand primary (teal-green)
+        brand: {
+          50: '#F0FDFA',
+          100: '#CCFBF1',
+          200: '#99F6E4',
+          300: '#5EEAD4',
+          400: '#2DD4BF',
+          500: '#0D9488', // Primary action color
+          600: '#0F766E',
+          700: '#115E59',
+          800: '#134E4A',
+          900: '#042F2E',
+        },
+
+        // Accent (warm amber - harmonious with greens)
+        accent: {
+          50: '#FFFBEB',
+          100: '#FEF3C7',
+          200: '#FDE68A',
+          300: '#FCD34D',
+          400: '#FBBF24',
+          500: '#F59E0B', // Primary accent
+          600: '#D97706',
+          700: '#B45309',
+          800: '#92400E',
+          900: '#78350F',
+        },
+
         // Semantic colors
         danger: {
-          50: '#fef2f2',
-          100: '#fee2e2',
-          500: '#ef4444',
-          600: '#dc2626',
-          700: '#b91c1c',
+          50: '#FEF2F2',
+          100: '#FEE2E2',
+          200: '#FECACA',
+          500: '#EF4444',
+          600: '#DC2626',
+          700: '#B91C1C',
         },
         warning: {
-          50: '#fffbeb',
-          100: '#fef3c7',
-          500: '#f59e0b',
-          600: '#d97706',
+          50: '#FFFBEB',
+          100: '#FEF3C7',
+          200: '#FDE68A',
+          500: '#F59E0B',
+          600: '#D97706',
         },
         success: {
-          50: '#f0fdf4',
-          100: '#dcfce7',
-          500: '#22c55e',
-          600: '#16a34a',
+          50: '#F0FDF4',
+          100: '#DCFCE7',
+          200: '#BBF7D0',
+          500: '#22C55E',
+          600: '#16A34A',
+        },
+        info: {
+          50: '#EFF6FF',
+          100: '#DBEAFE',
+          200: '#BFDBFE',
+          500: '#3B82F6',
+          600: '#2563EB',
+        },
+
+        // UI Neutrals
+        surface: {
+          DEFAULT: '#FFFFFF',
+          muted: '#F9FAFB',
+          elevated: '#FFFFFF',
         },
       },
       // Minimum touch target sizes for accessibility (44x44 on iOS, 48x48 on Android)

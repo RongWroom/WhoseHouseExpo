@@ -34,7 +34,7 @@ export default function FosterCarerMessagesScreen() {
 
   if (!caseData || !caseData.social_worker_id) {
     return (
-      <Screen backgroundColor="bg-gray-50">
+      <Screen backgroundColor="bg-[#F8F8F5]">
         <Container className="py-6">
           <TitleBar
             title="Messages"
