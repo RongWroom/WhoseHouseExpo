@@ -15,15 +15,17 @@ export default function CaseloadScreen() {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'pending' | 'closed'>('all');
 
+  const getCaseLabel = (caseId: string, caseNumber?: string | null) =>
+    caseNumber || `Case-${String(caseId).slice(0, 8).toUpperCase()}`;
+
   // Filter cases based on search
   const filteredCases = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
     const base = cases.filter((c: CaseWithDetails) => {
       if (!q) return true;
-      const child = c.child_name?.toLowerCase() || '';
       const carer = c.foster_carer?.full_name?.toLowerCase() || '';
       const caseNumber = c.case_number?.toLowerCase() || '';
-      return child.includes(q) || carer.includes(q) || caseNumber.includes(q);
+      return carer.includes(q) || caseNumber.includes(q);
     });
 
     if (statusFilter === 'all') return base;
@@ -77,7 +79,9 @@ export default function CaseloadScreen() {
     >
       <View className="flex-row items-center justify-between mb-3">
         <View className="flex-1 pr-3">
-          <Text className="text-sm font-bold text-[#181811]">{caseItem.child_name}</Text>
+          <Text className="text-sm font-bold text-[#181811]">
+            {getCaseLabel(caseItem.id, caseItem.case_number)}
+          </Text>
           <Text className="text-xs text-[#8C8B5F] mt-1">{caseItem.case_number}</Text>
         </View>
         <Badge
@@ -154,7 +158,7 @@ export default function CaseloadScreen() {
         {/* Search */}
         <View className="mb-6">
           <Input
-            placeholder="Search by case or foster carer..."
+            placeholder="Search by case number or foster carer..."
             value={searchQuery}
             onChangeText={setSearchQuery}
           />

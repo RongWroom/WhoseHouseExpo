@@ -2,9 +2,17 @@ import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import type { Database } from '../types/database';
+import { Anonymizer } from '../utils/privacy';
 
 type Case = Database['public']['Tables']['cases']['Row'];
 type Profile = Database['public']['Tables']['profiles']['Row'];
+
+const getChildDisplayLabel = (c: any): string => {
+  if (c?.metadata?.child_name) {
+    return Anonymizer.nameToInitials(c.metadata.child_name);
+  }
+  return c?.case_number || `Case-${String(c?.id).slice(0, 8).toUpperCase()}`;
+};
 
 export interface CaseWithDetails extends Case {
   foster_carer?: Profile | null;
@@ -56,10 +64,7 @@ export function useCases() {
       // Extract child names from metadata or use anonymized format
       const casesWithNames: CaseWithDetails[] = ((data as any[]) || []).map((c: any) => ({
         ...c,
-        child_name:
-          c.metadata?.child_name ||
-          c.case_number ||
-          `Case-${String(c.id).slice(0, 8).toUpperCase()}`,
+        child_name: getChildDisplayLabel(c),
       }));
 
       setCases(casesWithNames);
@@ -115,12 +120,7 @@ export function useCase(caseId: string | null) {
 
       const caseWithName: CaseWithDetails = {
         ...(data as any),
-        child_name:
-          (data as any).metadata?.child_name ||
-          (data as any).case_number ||
-          `Case-${String((data as any).id)
-            .slice(0, 8)
-            .toUpperCase()}`,
+        child_name: getChildDisplayLabel(data as any),
       };
 
       setCaseData(caseWithName);
@@ -180,12 +180,7 @@ export function useActiveCaseForCarer(carerId: string | null) {
 
       const caseWithName: CaseWithDetails = {
         ...(data as any),
-        child_name:
-          (data as any).metadata?.child_name ||
-          (data as any).case_number ||
-          `Case-${String((data as any).id)
-            .slice(0, 8)
-            .toUpperCase()}`,
+        child_name: getChildDisplayLabel(data as any),
       };
 
       setCaseData(caseWithName);

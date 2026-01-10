@@ -21,10 +21,10 @@ import * as Clipboard from 'expo-clipboard';
 interface CaseData {
   id: string;
   case_number: string;
-  child_name: string;
   status: string;
   created_at: string;
   updated_at: string;
+  metadata?: any;
   foster_carer?: {
     id: string;
     full_name: string;
@@ -171,7 +171,7 @@ export default function CaseDetailScreen() {
               <CardContent>
                 <View className="flex-row items-center justify-between mb-3">
                   <Text variant="h2" weight="bold">
-                    {caseData.child_name}
+                    {caseData.case_number}
                   </Text>
                   <Badge
                     variant={

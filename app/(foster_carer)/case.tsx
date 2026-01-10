@@ -139,7 +139,7 @@ export default function FosterCarerCaseScreen() {
   const socialWorker = caseData.social_worker;
   const socialWorkerName = socialWorker?.full_name || 'Social Worker';
   const socialWorkerInitials = Anonymizer.nameToInitials(socialWorkerName);
-  const childInitials = Anonymizer.nameToInitials(caseData.child_name || 'Child');
+  const childInitials = caseData.child_name || 'Child';
 
   return (
     <Screen scroll backgroundColor="bg-gray-50">

@@ -42,25 +42,23 @@ const fosterCarers = [
 ];
 
 const children = [
-  { name: 'Alex Thompson', age: 10, status: 'active' },
-  { name: 'Jordan Lee', age: 8, status: 'active' },
-  { name: 'Casey Morgan', age: 12, status: 'active' },
-  { name: 'Riley Parker', age: 9, status: 'active' },
-  { name: 'Jamie Wilson', age: 11, status: 'active' },
-  { name: 'Taylor Brown', age: 7, status: 'pending' },
-  { name: 'Morgan Davis', age: 13, status: 'pending' },
-  { name: 'Quinn Miller', age: 10, status: 'closed' },
+  { age: 10, status: 'active' },
+  { age: 8, status: 'active' },
+  { age: 12, status: 'active' },
+  { age: 9, status: 'active' },
+  { age: 11, status: 'active' },
+  { age: 7, status: 'pending' },
+  { age: 13, status: 'pending' },
+  { age: 10, status: 'closed' },
 ];
 
 const sampleMessages = [
   'Hi, just checking in on how things are going today.',
-  'Alex had a great day at school! Got a gold star in math.',
   'Could we schedule a meeting to discuss the upcoming review?',
   "Thank you for the update. Let's plan to meet next Tuesday.",
-  "Just wanted to let you know that Jordan's behavior has improved significantly.",
   "I've noticed some concerns I'd like to discuss with you.",
   'The school trip permission form needs to be signed by Friday.',
-  'Great news! Casey made the football team!',
+  'Great news! They made the football team!',
 ];
 
 async function createUser(email, password, fullName, role) {
@@ -227,7 +225,6 @@ async function seedDatabase() {
             social_worker_id: socialWorkerId,
             foster_carer_id: fosterCarerId,
             metadata: {
-              child_name: child.name,
               age: child.age,
               school: 'Local Primary School',
               placement_date: new Date(
@@ -241,13 +238,13 @@ async function seedDatabase() {
         .single();
 
       if (caseError || !caseData) {
-        console.log(`   ❌ Error creating case for ${child.name}:`, caseError?.message);
+        console.log(`   ❌ Error creating case for ${caseNumber}:`, caseError?.message);
       } else {
         caseIds.push({ id: caseData.id, socialWorkerId, fosterCarerId });
         console.log(
           existingCase
-            ? `   🔁 Updated: ${child.name} (${child.status})`
-            : `   ✅ Created: ${child.name} (${child.status})`,
+            ? `   🔁 Updated: ${caseNumber} (${child.status})`
+            : `   ✅ Created: ${caseNumber} (${child.status})`,
         );
       }
     }

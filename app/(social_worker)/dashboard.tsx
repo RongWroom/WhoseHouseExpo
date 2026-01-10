@@ -17,6 +17,9 @@ export default function SocialWorkerDashboard() {
   const unreadCount = useUnreadCount(profile?.id || '');
   const { news, loading: newsLoading, refetch: refetchNews } = useSocialCareNews();
 
+  const getCaseLabel = (caseId: string, caseNumber?: string | null) =>
+    caseNumber || `Case-${String(caseId).slice(0, 8).toUpperCase()}`;
+
   // Calculate stats
   const activeCases = cases.filter((c) => c.status === 'active').length;
   const pendingCases = cases.filter((c) => c.status === 'pending').length;
@@ -152,7 +155,9 @@ export default function SocialWorkerDashboard() {
               >
                 <View className="flex-row items-center justify-between">
                   <View className="flex-1">
-                    <Text className="text-sm font-bold text-[#181811]">{caseItem.child_name}</Text>
+                    <Text className="text-sm font-bold text-[#181811]">
+                      {getCaseLabel(caseItem.id, caseItem.case_number)}
+                    </Text>
                     {caseItem.foster_carer && (
                       <Text className="text-xs text-[#8C8B5F] mt-1">
                         {caseItem.foster_carer.full_name || 'Carer not assigned'}

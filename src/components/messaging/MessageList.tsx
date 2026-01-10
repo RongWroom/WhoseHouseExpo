@@ -4,6 +4,7 @@ import { Text } from '../ui/Text';
 import { Avatar } from '../ui/Avatar';
 import { AlertTriangle, Check, CheckCheck, MessageCircle } from 'lucide-react-native';
 import type { MessageWithDetails } from '../../hooks/useMessages';
+import { Anonymizer } from '../../utils/privacy';
 
 interface MessageListProps {
   messages: MessageWithDetails[];
@@ -21,6 +22,37 @@ export function MessageList({
   accentRole = 'social_worker',
 }: MessageListProps) {
   const accentHex = accentRole === 'foster_carer' ? '#34C759' : '#007AFF';
+
+  const escapeRegExp = (value: string) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+  const sanitizeChildNameFromContent = (content: string, childFullName: string | null): string => {
+    if (!content) return '';
+    if (!childFullName) return content;
+
+    const trimmed = String(childFullName).trim();
+    if (!trimmed) return content;
+
+    const initials = Anonymizer.nameToInitials(trimmed);
+    const parts = trimmed.split(/\s+/).filter(Boolean);
+    const firstName = parts[0];
+
+    let sanitized = content;
+
+    if (parts.length >= 2) {
+      const fullPattern = new RegExp(`\\b${parts.map(escapeRegExp).join('\\\\s+')}\\b`, 'gi');
+      sanitized = sanitized.replace(fullPattern, initials);
+    } else {
+      const singlePattern = new RegExp(`\\b${escapeRegExp(trimmed)}\\b`, 'gi');
+      sanitized = sanitized.replace(singlePattern, initials);
+    }
+
+    if (firstName) {
+      const firstPattern = new RegExp(`\\b${escapeRegExp(firstName)}\\b`, 'gi');
+      sanitized = sanitized.replace(firstPattern, initials);
+    }
+
+    return sanitized;
+  };
 
   const formatTime = (timestamp: string) => {
     const date = new Date(timestamp);
@@ -54,6 +86,9 @@ export function MessageList({
       message.sender_id === null
         ? message.child_initials || 'Child'
         : message.sender_profile?.full_name || 'Unknown';
+
+    const childFullName = ((message.case as any)?.metadata?.child_name as string) || null;
+    const safeContent = sanitizeChildNameFromContent(message.content, childFullName);
 
     // Don't show read receipts to children (for their sent messages)
     const showReadReceipt = userRole !== null && isOwnMessage;
@@ -102,7 +137,7 @@ export function MessageList({
 
               {/* Message Text */}
               <Text className={`text-base ${isOwnMessage ? 'text-white' : 'text-gray-900'}`}>
-                {message.content}
+                {safeContent}
               </Text>
             </View>
 

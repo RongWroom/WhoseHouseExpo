@@ -272,7 +272,13 @@ export const validateChildToken = async (
       };
     }
 
-    return { data, error: null };
+    if (data && typeof data === 'object') {
+      const safeData = { ...(data as any) };
+      delete safeData.child_name;
+      return { data: safeData as TokenValidationResponse, error: null };
+    }
+
+    return { data: data as any, error: null };
   } catch (error) {
     return {
       data: null,

@@ -20,6 +20,9 @@ export default function MessagesScreen() {
   const { cases, loading } = useCases();
   const [selectedCase, setSelectedCase] = useState<string | null>(null);
 
+  const getCaseLabel = (caseData: CaseWithDetails) =>
+    caseData.case_number || `Case-${String(caseData.id).slice(0, 8).toUpperCase()}`;
+
   // If a case is selected, show the messaging screen
   if (selectedCase) {
     const caseData = cases.find((c: CaseWithDetails) => c.id === selectedCase);
@@ -27,6 +30,8 @@ export default function MessagesScreen() {
       setSelectedCase(null);
       return null;
     }
+
+    const caseLabel = getCaseLabel(caseData);
 
     return (
       <View className="flex-1 bg-white">
@@ -42,7 +47,7 @@ export default function MessagesScreen() {
             </TouchableOpacity>
             <View className="flex-1">
               <Text variant="body" weight="semibold">
-                {caseData.child_name}
+                {caseLabel}
               </Text>
               <Text variant="caption" color="muted">
                 {caseData.foster_carer?.full_name || 'Foster Carer'}
@@ -91,7 +96,7 @@ export default function MessagesScreen() {
             renderItem={({ item }) => (
               <TouchableOpacity
                 onPress={() => setSelectedCase(item.id)}
-                accessibilityLabel={`Message about ${item.child_name}`}
+                accessibilityLabel={`Message about ${getCaseLabel(item)}`}
                 accessibilityRole="button"
               >
                 <Card variant="elevated" className="mb-3">
@@ -100,7 +105,7 @@ export default function MessagesScreen() {
                       <View className="flex-1">
                         <View className="flex-row items-center justify-between mb-1">
                           <Text variant="body" weight="semibold">
-                            {item.child_name}
+                            {getCaseLabel(item)}
                           </Text>
                           <Badge variant={item.status === 'active' ? 'success' : 'default'}>
                             {item.status}

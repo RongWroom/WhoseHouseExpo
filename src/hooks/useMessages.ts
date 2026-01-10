@@ -16,14 +16,9 @@ export interface MessageWithDetails extends Message {
   child_initials?: string; // For privacy - children shown as initials only
 }
 
-// Helper to get child initials from their case
-export function getChildInitials(childName: string | null): string {
-  if (!childName) return 'Child';
-
-  return childName
-    .split(' ')
-    .map((word) => word[0]?.toUpperCase() || '')
-    .join('.');
+// Children must never be identified; display should always be generic.
+export function getChildInitials(_childName: string | null): string {
+  return 'Child';
 }
 
 /**
@@ -94,10 +89,7 @@ export function useMessages(
       // Process messages to add child initials
       const processedMessages = ((data as any) || []).map((msg: any) => ({
         ...msg,
-        child_initials:
-          msg.sender_id === null
-            ? getChildInitials((msg.case?.metadata?.child_name as string) || null)
-            : undefined,
+        child_initials: msg.sender_id === null ? 'Child' : undefined,
       }));
 
       setMessages(processedMessages);
@@ -143,10 +135,7 @@ export function useMessages(
             const msgData = data as any;
             const processedMessage = {
               ...msgData,
-              child_initials:
-                msgData.sender_id === null
-                  ? getChildInitials((msgData.case?.metadata?.child_name as string) || null)
-                  : undefined,
+              child_initials: msgData.sender_id === null ? 'Child' : undefined,
             };
 
             setMessages((prev) => [...prev, processedMessage]);

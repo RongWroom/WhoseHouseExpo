@@ -30,7 +30,6 @@ export interface TokenValidationResponse {
   social_worker_name: string;
   social_worker_email: string;
   case_number: string;
-  child_name: string;
   expires_at: string;
   valid: boolean;
 }
