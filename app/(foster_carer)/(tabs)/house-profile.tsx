@@ -4,12 +4,14 @@ import {
   TouchableOpacity,
   Image,
   Alert,
-  ActivityIndicator,
+  Dimensions,
   KeyboardAvoidingView,
   Platform,
+  ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useState, useEffect } from 'react';
+import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import {
   Camera,
   Trash2,
@@ -17,17 +19,25 @@ import {
   ChevronLeft,
   ChevronRight,
   Users,
-  Clock,
-  Gamepad2,
+  MapPin,
+  Sparkles,
   CheckCircle,
   Eye,
   User,
+  ImagePlus,
+  Gamepad2,
+  Clock,
 } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
-import { Text, Card, Input } from '../../../src/components/ui';
+import { Text, Input } from '../../../src/components/ui';
+import { SunbeamSurface } from '../../../src/components/sunbeam';
 import { useAuth } from '../../../src/contexts/AuthContext';
 import { supabase } from '../../../src/lib/supabase';
+
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
+const PHOTO_GRID_GAP = 12;
+const PHOTO_ITEM_WIDTH = (SCREEN_WIDTH - 48 - PHOTO_GRID_GAP) / 2;
 
 interface HousePhoto {
   id: string;
@@ -229,6 +239,7 @@ export default function HouseProfileScreen() {
     games: '',
     hobbies: '',
   });
+  const [showCelebration, setShowCelebration] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -360,10 +371,8 @@ export default function HouseProfileScreen() {
 
       if (error) throw error;
 
-      Alert.alert(
-        'Success!',
-        'Your house profile has been published and is now visible to the child.',
-      );
+      // Show celebration animation
+      setShowCelebration(true);
     } catch (err) {
       console.error('Failed to publish profile:', err);
       Alert.alert('Error', 'Failed to publish profile. Please try again.');
@@ -533,13 +542,6 @@ export default function HouseProfileScreen() {
     });
   };
 
-  const updateHouseRule = (index: number, value: string) => {
-    setProfileData((prev) => ({
-      ...prev,
-      houseRules: prev.houseRules.map((rule, i) => (i === index ? value : rule)),
-    }));
-  };
-
   const removeHouseRule = (index: number) => {
     setProfileData((prev) => ({
       ...prev,
@@ -598,112 +600,195 @@ export default function HouseProfileScreen() {
 
     const requiredSlots = HOUSE_IMAGE_SLOTS.filter((slot) => slot.required);
     const completedRequired = requiredSlots.filter((slot) => photosByCategory[slot.key]).length;
+    const progressPercent = Math.round((completedRequired / requiredSlots.length) * 100);
 
     return (
-      <View>
-        <Text variant="h2" weight="bold" className="mb-2">
-          House profile photos
-        </Text>
-        <Text variant="body" color="muted" className="mb-4">
-          Add one clear photo for each part of your home. This builds the preview card children see,
-          similar to an Airbnb listing.
-        </Text>
-
-        <Card variant="outlined" className="mb-5 bg-foster-carer-50 border-foster-carer-100">
-          <View className="p-3">
-            <Text variant="caption" weight="semibold" className="text-foster-carer-700">
-              Required photos: {completedRequired} of {requiredSlots.length}
-            </Text>
-            <Text variant="caption" color="muted" className="mt-1">
-              You can always come back and update these later.
-            </Text>
+      <Animated.View entering={FadeIn.duration(300)}>
+        {/* Hero Header */}
+        <View className="mb-6">
+          <View className="flex-row items-center gap-3 mb-2">
+            <View className="w-10 h-10 rounded-xl bg-[#F9F506]/20 items-center justify-center">
+              <Home size={20} color="#181811" />
+            </View>
+            <View className="flex-1">
+              <Text className="text-2xl font-bold text-[#181811]">Your Home Gallery</Text>
+            </View>
           </View>
-        </Card>
+          <Text className="text-[#8C8B5F] text-base leading-relaxed">
+            Help the child picture their new home. Clear, welcoming photos make all the difference.
+          </Text>
+        </View>
 
-        {HOUSE_IMAGE_SLOTS.map((slot) => {
-          const photo = photosByCategory[slot.key];
-
-          return (
-            <Card key={slot.key} variant="outlined" className="mb-4">
-              <View className="p-4">
-                <View className="mb-3 flex-row items-start justify-between">
-                  <View className="flex-1 pr-3">
-                    <Text variant="body" weight="semibold" className="text-gray-900">
-                      {slot.label}
-                    </Text>
-                    {slot.description && (
-                      <Text variant="caption" color="muted" className="mt-1">
-                        {slot.description}
-                      </Text>
-                    )}
-                  </View>
-                  <View
-                    className={`rounded-full px-2 py-1 ${
-                      slot.required ? 'bg-foster-carer-50' : 'bg-gray-50'
-                    }`}
-                  >
-                    <Text className="text-[10px] font-semibold text-gray-700">
-                      {slot.required ? (photo ? 'Required  b7 Done' : 'Required') : 'Optional'}
-                    </Text>
-                  </View>
-                </View>
-
-                {photo ? (
-                  <TouchableOpacity
-                    className="overflow-hidden rounded-xl bg-gray-100"
-                    onPress={() => pickImage('library', slot.key as HousePhoto['category'])}
-                    accessibilityRole="button"
-                    accessibilityLabel={`Change photo for ${slot.label}`}
-                  >
-                    <Image
-                      source={{ uri: photo.file_url }}
-                      className="h-40 w-full"
-                      resizeMode="cover"
-                    />
-                  </TouchableOpacity>
-                ) : (
-                  <TouchableOpacity
-                    className="mt-1 items-center justify-center rounded-xl border border-dashed border-foster-carer-200 bg-white px-4 py-6"
-                    onPress={() => pickImage('library', slot.key as HousePhoto['category'])}
-                    accessibilityRole="button"
-                    accessibilityLabel={`Add photo for ${slot.label}`}
-                  >
-                    <Camera size={22} color="#34C759" />
-                    <Text className="mt-2 text-sm font-medium text-foster-carer-600">
-                      Add photo
-                    </Text>
-                    <Text className="mt-1 text-xs text-gray-500">
-                      Tap to choose from your library
-                    </Text>
-                  </TouchableOpacity>
-                )}
+        {/* Progress Card */}
+        <SunbeamSurface className="mb-6">
+          <View className="p-4">
+            <View className="flex-row items-center justify-between mb-3">
+              <View className="flex-row items-center gap-2">
+                <Sparkles size={16} color="#F9F506" />
+                <Text className="text-sm font-bold text-[#181811]">Photo Progress</Text>
               </View>
-            </Card>
-          );
-        })}
-      </View>
+              <Text className="text-sm font-bold text-[#181811]">
+                {completedRequired}/{requiredSlots.length} required
+              </Text>
+            </View>
+            <View className="h-2 bg-gray-100 rounded-full overflow-hidden">
+              <Animated.View
+                entering={FadeIn.delay(200)}
+                className="h-full bg-[#F9F506] rounded-full"
+                style={{ width: `${progressPercent}%` }}
+              />
+            </View>
+            {completedRequired === requiredSlots.length && (
+              <Animated.View
+                entering={FadeInDown.delay(300)}
+                className="flex-row items-center gap-2 mt-3"
+              >
+                <CheckCircle size={16} color="#34C759" />
+                <Text className="text-sm font-medium text-foster-carer-600">
+                  All required photos complete!
+                </Text>
+              </Animated.View>
+            )}
+          </View>
+        </SunbeamSurface>
+
+        {/* Photo Grid */}
+        <View className="flex-row flex-wrap" style={{ marginHorizontal: -PHOTO_GRID_GAP / 2 }}>
+          {HOUSE_IMAGE_SLOTS.map((slot, index) => {
+            const photo = photosByCategory[slot.key];
+            const isRequired = slot.required;
+
+            return (
+              <Animated.View
+                key={slot.key}
+                entering={FadeInDown.delay(index * 50).duration(300)}
+                style={{
+                  width: PHOTO_ITEM_WIDTH,
+                  marginHorizontal: PHOTO_GRID_GAP / 2,
+                  marginBottom: PHOTO_GRID_GAP,
+                }}
+              >
+                <TouchableOpacity
+                  onPress={() => pickImage('library', slot.key as HousePhoto['category'])}
+                  activeOpacity={0.8}
+                  accessibilityRole="button"
+                  accessibilityLabel={
+                    photo ? `Change ${slot.label} photo` : `Add ${slot.label} photo`
+                  }
+                  className="relative"
+                >
+                  {photo ? (
+                    <View className="rounded-2xl overflow-hidden bg-gray-100 shadow-sm">
+                      <Image
+                        source={{ uri: photo.file_url }}
+                        className="w-full"
+                        style={{ aspectRatio: 4 / 3 }}
+                        resizeMode="cover"
+                      />
+                      {/* Overlay gradient */}
+                      <View className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+                      {/* Label */}
+                      <View className="absolute bottom-0 left-0 right-0 p-3">
+                        <Text className="text-white text-xs font-bold" numberOfLines={1}>
+                          {slot.label}
+                        </Text>
+                      </View>
+                      {/* Edit badge */}
+                      <View className="absolute top-2 right-2 w-7 h-7 rounded-full bg-white/90 items-center justify-center shadow-sm">
+                        <Camera size={14} color="#181811" />
+                      </View>
+                      {/* Required badge */}
+                      {isRequired && (
+                        <View className="absolute top-2 left-2 bg-[#F9F506] rounded-full px-2 py-0.5">
+                          <Text className="text-[10px] font-bold text-[#181811]">✓</Text>
+                        </View>
+                      )}
+                    </View>
+                  ) : (
+                    <View
+                      className={`rounded-2xl border-2 border-dashed items-center justify-center ${
+                        isRequired
+                          ? 'border-[#F9F506]/50 bg-[#F9F506]/5'
+                          : 'border-gray-200 bg-gray-50'
+                      }`}
+                      style={{ aspectRatio: 4 / 3 }}
+                    >
+                      <View
+                        className={`w-10 h-10 rounded-full items-center justify-center mb-2 ${
+                          isRequired ? 'bg-[#F9F506]/20' : 'bg-gray-100'
+                        }`}
+                      >
+                        <ImagePlus size={20} color={isRequired ? '#181811' : '#9CA3AF'} />
+                      </View>
+                      <Text
+                        className={`text-xs font-semibold text-center px-2 ${
+                          isRequired ? 'text-[#181811]' : 'text-gray-500'
+                        }`}
+                        numberOfLines={2}
+                      >
+                        {slot.label}
+                      </Text>
+                      {isRequired && (
+                        <View className="mt-1.5 bg-[#F9F506] rounded-full px-2 py-0.5">
+                          <Text className="text-[9px] font-bold text-[#181811]">REQUIRED</Text>
+                        </View>
+                      )}
+                    </View>
+                  )}
+                </TouchableOpacity>
+              </Animated.View>
+            );
+          })}
+        </View>
+
+        {/* Tip Card */}
+        <SunbeamSurface className="mt-2">
+          <View className="p-4 flex-row items-start gap-3">
+            <View className="w-8 h-8 rounded-full bg-blue-50 items-center justify-center">
+              <Text className="text-sm">💡</Text>
+            </View>
+            <View className="flex-1">
+              <Text className="text-sm font-semibold text-[#181811] mb-1">Photo tips</Text>
+              <Text className="text-xs text-[#8C8B5F] leading-relaxed">
+                Natural daylight works best. Show spaces as they normally look — tidy but lived-in
+                feels more welcoming than too perfect.
+              </Text>
+            </View>
+          </View>
+        </SunbeamSurface>
+      </Animated.View>
     );
   };
 
   const renderStep2 = () => (
-    <View>
-      <Text variant="h2" weight="bold" className="mb-2">
-        Step 2: Household Members
-      </Text>
-      <Text variant="body" color="muted" className="mb-6">
-        Tell us about who lives in the house. Tap the tags below as many times as you need — copies
-        are welcome for blended and chosen families.
-      </Text>
+    <Animated.View entering={FadeIn.duration(300)}>
+      {/* Hero Header */}
+      <View className="mb-6">
+        <View className="flex-row items-center gap-3 mb-2">
+          <View className="w-10 h-10 rounded-xl bg-[#F9F506]/20 items-center justify-center">
+            <Users size={20} color="#181811" />
+          </View>
+          <View className="flex-1">
+            <Text className="text-2xl font-bold text-[#181811]">Meet the Family</Text>
+          </View>
+        </View>
+        <Text className="text-[#8C8B5F] text-base leading-relaxed">
+          Help the child know who they'll be living with. Every family is unique — add as many
+          people as you need.
+        </Text>
+      </View>
 
-      <Card variant="outlined" className="mb-4">
+      {/* Quick Add Tags */}
+      <SunbeamSurface className="mb-6">
         <View className="p-4">
-          <Text variant="body" weight="semibold">
-            <Users size={20} className="inline mr-2" /> Quick add
+          <View className="flex-row items-center gap-2 mb-3">
+            <Sparkles size={16} color="#F9F506" />
+            <Text className="text-sm font-bold text-[#181811]">Quick Add</Text>
+          </View>
+          <Text className="text-xs text-[#8C8B5F] mb-4">
+            Tap to add someone. You can edit details afterwards.
           </Text>
-          <Text variant="caption" color="muted" className="mt-1">
-            Tap to insert a person. You can edit their name or description afterwards.
-          </Text>
-          <View className="flex-row flex-wrap gap-2 mt-4">
+          <View className="flex-row flex-wrap gap-2">
             {QUICK_MEMBER_TAGS.map((tag) => (
               <TouchableOpacity
                 key={tag.label}
@@ -713,489 +798,593 @@ export default function HouseProfileScreen() {
                     role: tag.role,
                   })
                 }
-                className="rounded-full border border-foster-carer-200 bg-foster-carer-50 px-4 py-2"
+                activeOpacity={0.7}
+                className="rounded-full bg-[#F9F506]/10 border border-[#F9F506]/30 px-4 py-2"
               >
-                <Text className="text-sm font-medium text-foster-carer-600">{tag.label}</Text>
+                <Text className="text-sm font-medium text-[#181811]">{tag.label}</Text>
               </TouchableOpacity>
             ))}
           </View>
         </View>
-      </Card>
+      </SunbeamSurface>
 
       {profileData.householdMembers.length === 0 ? (
-        <Card variant="outlined" className="mb-4">
-          <View className="p-4 items-center">
-            <Users size={20} color="#9CA3AF" />
-            <Text variant="body" weight="medium" className="mt-3 mb-1">
-              No one added yet
-            </Text>
-            <Text variant="caption" color="muted" className="text-center">
-              Add someone using the quick tags above or create a custom entry.
+        <SunbeamSurface className="mb-4">
+          <View className="p-6 items-center">
+            <View className="w-16 h-16 rounded-full bg-gray-100 items-center justify-center mb-4">
+              <Users size={28} color="#9CA3AF" />
+            </View>
+            <Text className="text-lg font-bold text-[#181811] mb-1">No one added yet</Text>
+            <Text className="text-sm text-[#8C8B5F] text-center mb-4">
+              Use the quick tags above or add someone manually below.
             </Text>
             <TouchableOpacity
-              className="mt-4 rounded-full bg-foster-carer-500 px-4 py-2"
+              className="rounded-full bg-[#F9F506] px-6 py-3"
               onPress={() => addHouseholdMember()}
+              activeOpacity={0.8}
             >
-              <Text className="text-sm font-semibold text-white">+ Add someone</Text>
+              <Text className="text-sm font-bold text-[#181811]">+ Add someone</Text>
             </TouchableOpacity>
           </View>
-        </Card>
+        </SunbeamSurface>
       ) : (
-        <View className="space-y-4">
+        <View className="gap-4">
           {profileData.householdMembers.map((member, index) => (
-            <Card key={member.id} variant="outlined">
-              <View className="p-4">
-                <View className="flex-row items-center justify-between mb-4">
-                  <Text variant="body" weight="semibold">
-                    {member.role === 'pet' ? 'Pet' : 'Person'} {index + 1}
-                  </Text>
-                  <TouchableOpacity
-                    onPress={() => removeHouseholdMember(member.id)}
-                    className="p-2"
-                    accessibilityRole="button"
-                    accessibilityLabel="Remove member"
-                  >
-                    <Trash2 size={18} color="#EF4444" />
-                  </TouchableOpacity>
-                </View>
-
-                {/* Photo Upload Section */}
-                <View className="items-center mb-4">
-                  <TouchableOpacity
-                    onPress={() => pickMemberPhoto(member.id)}
-                    className="relative"
-                    accessibilityRole="button"
-                    accessibilityLabel={`Add photo for ${member.name || 'this person'}`}
-                  >
-                    {member.photoUrl ? (
-                      <Image
-                        source={{ uri: member.photoUrl }}
-                        className="w-24 h-24 rounded-full"
-                        resizeMode="cover"
-                      />
-                    ) : (
-                      <View className="w-24 h-24 rounded-full bg-foster-carer-100 items-center justify-center border-2 border-dashed border-foster-carer-300">
-                        <User size={32} color="#34C759" />
+            <Animated.View key={member.id} entering={FadeInDown.delay(index * 100).duration(300)}>
+              <SunbeamSurface>
+                <View className="p-4">
+                  {/* Header with photo and delete */}
+                  <View className="flex-row items-start justify-between mb-4">
+                    <TouchableOpacity
+                      onPress={() => pickMemberPhoto(member.id)}
+                      className="relative"
+                      accessibilityRole="button"
+                      accessibilityLabel={`Add photo for ${member.name || 'this person'}`}
+                    >
+                      {member.photoUrl ? (
+                        <Image
+                          source={{ uri: member.photoUrl }}
+                          className="w-20 h-20 rounded-2xl"
+                          resizeMode="cover"
+                        />
+                      ) : (
+                        <View className="w-20 h-20 rounded-2xl bg-[#F9F506]/10 items-center justify-center border-2 border-dashed border-[#F9F506]/30">
+                          <User size={28} color="#181811" />
+                        </View>
+                      )}
+                      <View className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-[#F9F506] items-center justify-center border-2 border-white">
+                        <Camera size={12} color="#181811" />
                       </View>
-                    )}
-                    {/* Camera badge */}
-                    <View className="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-foster-carer-500 items-center justify-center border-2 border-white">
-                      <Camera size={14} color="white" />
-                    </View>
-                  </TouchableOpacity>
-                  <TouchableOpacity onPress={() => pickMemberPhoto(member.id)} className="mt-2">
-                    <Text className="text-sm text-foster-carer-600 font-medium">
-                      {member.photoUrl ? 'Change photo' : 'Add photo'}
-                    </Text>
-                  </TouchableOpacity>
-                </View>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => removeHouseholdMember(member.id)}
+                      className="p-2 rounded-full bg-red-50"
+                      accessibilityRole="button"
+                      accessibilityLabel="Remove member"
+                    >
+                      <Trash2 size={16} color="#EF4444" />
+                    </TouchableOpacity>
+                  </View>
 
-                <View className="space-y-3">
-                  <Input
-                    label="Their name"
-                    placeholder="e.g. Sarah"
-                    value={member.name}
-                    onChangeText={(text) => updateHouseholdMember(member.id, { name: text })}
-                  />
-                  <Input
-                    label="How they identify (in their own words)"
-                    placeholder={`e.g. "I'm your foster mum"`}
-                    value={member.relationshipLabel || ''}
-                    onChangeText={(text) =>
-                      updateHouseholdMember(member.id, { relationshipLabel: text })
-                    }
-                  />
-                  <Input
-                    label="Age (optional)"
-                    placeholder="e.g. 36"
-                    value={member.age || ''}
-                    onChangeText={(text) => updateHouseholdMember(member.id, { age: text })}
-                  />
-                  <Input
-                    label="Tell us a little about them"
-                    placeholder="They love board games and gardening..."
-                    value={member.description || ''}
-                    onChangeText={(text) => updateHouseholdMember(member.id, { description: text })}
-                    multiline
-                    numberOfLines={3}
-                  />
+                  {/* Form fields */}
+                  <View className="gap-3">
+                    <Input
+                      label="Their name"
+                      placeholder="e.g. Sarah"
+                      value={member.name}
+                      onChangeText={(text) => updateHouseholdMember(member.id, { name: text })}
+                    />
+                    <Input
+                      label="How they identify"
+                      placeholder={`e.g. "I'm your foster mum"`}
+                      value={member.relationshipLabel || ''}
+                      onChangeText={(text) =>
+                        updateHouseholdMember(member.id, { relationshipLabel: text })
+                      }
+                    />
+                    <View className="flex-row gap-3">
+                      <View className="flex-1">
+                        <Input
+                          label="Age (optional)"
+                          placeholder="e.g. 36"
+                          value={member.age || ''}
+                          onChangeText={(text) => updateHouseholdMember(member.id, { age: text })}
+                        />
+                      </View>
+                    </View>
+                    <Input
+                      label="About them"
+                      placeholder="They love board games and gardening..."
+                      value={member.description || ''}
+                      onChangeText={(text) =>
+                        updateHouseholdMember(member.id, { description: text })
+                      }
+                      multiline
+                      numberOfLines={3}
+                    />
+                  </View>
                 </View>
-              </View>
-            </Card>
+              </SunbeamSurface>
+            </Animated.View>
           ))}
 
           <TouchableOpacity
-            className="rounded-xl border border-dashed border-foster-carer-300 bg-foster-carer-50 py-3 items-center"
+            className="rounded-xl border-2 border-dashed border-[#F9F506]/30 bg-[#F9F506]/5 py-4 items-center"
             onPress={() => addHouseholdMember()}
+            activeOpacity={0.7}
           >
-            <Text className="text-sm font-medium text-foster-carer-600">+ Add someone else</Text>
+            <Text className="text-sm font-bold text-[#181811]">+ Add someone else</Text>
           </TouchableOpacity>
         </View>
       )}
-    </View>
+    </Animated.View>
   );
 
   const renderStep3 = () => (
-    <View>
-      <Text variant="h2" weight="bold" className="mb-2">
-        Step 3: Local area highlights
-      </Text>
-      <Text variant="body" color="muted" className="mb-6">
-        Help the child picture life beyond your home. Share favourite nearby places, after-school
-        activities, or weekend spots you love to visit together.
-      </Text>
+    <Animated.View entering={FadeIn.duration(300)}>
+      {/* Hero Header */}
+      <View className="mb-6">
+        <View className="flex-row items-center gap-3 mb-2">
+          <View className="w-10 h-10 rounded-xl bg-[#F9F506]/20 items-center justify-center">
+            <MapPin size={20} color="#181811" />
+          </View>
+          <View className="flex-1">
+            <Text className="text-2xl font-bold text-[#181811]">Explore the Area</Text>
+          </View>
+        </View>
+        <Text className="text-[#8C8B5F] text-base leading-relaxed">
+          Share your favourite local spots — parks, play centres, weekend activities. Help the child
+          imagine life in your neighbourhood.
+        </Text>
+      </View>
 
-      <Card variant="outlined" className="mb-4">
+      {/* Local Overview */}
+      <SunbeamSurface className="mb-6">
         <View className="p-4">
-          <Text variant="body" weight="semibold">
-            <Clock size={20} className="inline mr-2" /> Local overview
-          </Text>
-          <Text variant="caption" color="muted" className="mt-1">
-            Keep it simple and reassuring — e.g. “We live near the park and the cinema is a short
-            drive away”.
+          <View className="flex-row items-center gap-2 mb-3">
+            <Clock size={16} color="#F9F506" />
+            <Text className="text-sm font-bold text-[#181811]">Neighbourhood Overview</Text>
+          </View>
+          <Text className="text-xs text-[#8C8B5F] mb-4">
+            A brief description — e.g. "We live near the park and there's a cinema a short drive
+            away."
           </Text>
           <Input
-            className="mt-4"
             multiline
             numberOfLines={3}
-            label="Describe the local area"
-            placeholder="We’re five minutes from school and love walking to Crazy Kingdom on rainy days..."
+            placeholder="We're five minutes from school and love walking to Crazy Kingdom on rainy days..."
             value={profileData.localArea.overview}
             onChangeText={(text) => updateLocalArea({ overview: text })}
           />
         </View>
-      </Card>
+      </SunbeamSurface>
 
-      <Card variant="outlined" className="mb-4">
+      {/* Quick Add Tags */}
+      <SunbeamSurface className="mb-6">
         <View className="p-4">
-          <Text variant="body" weight="semibold">
-            Quick ideas
+          <View className="flex-row items-center gap-2 mb-3">
+            <Sparkles size={16} color="#F9F506" />
+            <Text className="text-sm font-bold text-[#181811]">Quick Ideas</Text>
+          </View>
+          <Text className="text-xs text-[#8C8B5F] mb-4">
+            Tap to add, then personalise with details.
           </Text>
-          <Text variant="caption" color="muted" className="mt-1">
-            Tap to add a highlight, then personalise it.
-          </Text>
-          <View className="flex-row flex-wrap gap-2 mt-4">
+          <View className="flex-row flex-wrap gap-2">
             {LOCAL_AREA_TAGS.map((tag) => (
               <TouchableOpacity
                 key={tag}
                 onPress={() => addLocalAreaHighlight(tag)}
-                className="rounded-full border border-foster-carer-200 bg-foster-carer-50 px-4 py-2"
+                activeOpacity={0.7}
+                className="rounded-full bg-[#F9F506]/10 border border-[#F9F506]/30 px-4 py-2"
               >
-                <Text className="text-sm font-medium text-foster-carer-600">{tag}</Text>
+                <Text className="text-sm font-medium text-[#181811]">{tag}</Text>
               </TouchableOpacity>
             ))}
           </View>
         </View>
-      </Card>
+      </SunbeamSurface>
 
       {profileData.localArea.highlights.length === 0 ? (
-        <Card variant="outlined">
-          <View className="p-4 items-center">
-            <Text variant="body" weight="medium" className="mb-2">
-              No places added yet
-            </Text>
-            <Text variant="caption" color="muted" className="text-center">
-              Add a park, soft play centre, cinema or anything else you enjoy together.
+        <SunbeamSurface>
+          <View className="p-6 items-center">
+            <View className="w-16 h-16 rounded-full bg-gray-100 items-center justify-center mb-4">
+              <MapPin size={28} color="#9CA3AF" />
+            </View>
+            <Text className="text-lg font-bold text-[#181811] mb-1">No places added yet</Text>
+            <Text className="text-sm text-[#8C8B5F] text-center mb-4">
+              Parks, play centres, cinemas — anywhere you enjoy visiting together.
             </Text>
             <TouchableOpacity
-              className="mt-4 rounded-full bg-foster-carer-500 px-4 py-2"
+              className="rounded-full bg-[#F9F506] px-6 py-3"
               onPress={() => addLocalAreaHighlight()}
+              activeOpacity={0.8}
             >
-              <Text className="text-sm font-semibold text-white">+ Add a highlight</Text>
+              <Text className="text-sm font-bold text-[#181811]">+ Add a place</Text>
             </TouchableOpacity>
           </View>
-        </Card>
+        </SunbeamSurface>
       ) : (
-        <View className="space-y-4">
+        <View className="gap-4">
           {profileData.localArea.highlights.map((highlight, index) => (
-            <Card key={highlight.id} variant="outlined">
-              <View className="p-4">
-                <View className="flex-row items-center justify-between mb-4">
-                  <Text variant="body" weight="semibold">
-                    Place {index + 1}
-                  </Text>
-                  <TouchableOpacity
-                    onPress={() => removeLocalAreaHighlight(highlight.id)}
-                    className="p-2"
-                    accessibilityRole="button"
-                    accessibilityLabel="Remove highlight"
-                  >
-                    <Trash2 size={18} color="#EF4444" />
-                  </TouchableOpacity>
+            <Animated.View
+              key={highlight.id}
+              entering={FadeInDown.delay(index * 100).duration(300)}
+            >
+              <SunbeamSurface>
+                <View className="p-4">
+                  <View className="flex-row items-center justify-between mb-4">
+                    <View className="flex-row items-center gap-2">
+                      <View className="w-8 h-8 rounded-lg bg-blue-50 items-center justify-center">
+                        <MapPin size={16} color="#1d4ed8" />
+                      </View>
+                      <Text className="text-sm font-bold text-[#181811]">Place {index + 1}</Text>
+                    </View>
+                    <TouchableOpacity
+                      onPress={() => removeLocalAreaHighlight(highlight.id)}
+                      className="p-2 rounded-full bg-red-50"
+                      accessibilityRole="button"
+                      accessibilityLabel="Remove highlight"
+                    >
+                      <Trash2 size={16} color="#EF4444" />
+                    </TouchableOpacity>
+                  </View>
+                  <View className="gap-3">
+                    <Input
+                      label="Place or activity"
+                      placeholder="Crazy Kingdom soft play"
+                      value={highlight.name}
+                      onChangeText={(text) =>
+                        updateLocalAreaHighlight(highlight.id, { name: text })
+                      }
+                    />
+                    <Input
+                      label="What makes it special?"
+                      placeholder="We usually go here after school on Fridays and get slushies."
+                      multiline
+                      numberOfLines={3}
+                      value={highlight.description}
+                      onChangeText={(text) =>
+                        updateLocalAreaHighlight(highlight.id, { description: text })
+                      }
+                    />
+                  </View>
                 </View>
-                <Input
-                  label="Place or activity"
-                  placeholder="Crazy Kingdom soft play"
-                  value={highlight.name}
-                  onChangeText={(text) => updateLocalAreaHighlight(highlight.id, { name: text })}
-                />
-                <Input
-                  className="mt-3"
-                  label="What makes it special?"
-                  placeholder="We usually go here after school on Fridays and get slushies."
-                  multiline
-                  numberOfLines={3}
-                  value={highlight.description}
-                  onChangeText={(text) =>
-                    updateLocalAreaHighlight(highlight.id, { description: text })
-                  }
-                />
-              </View>
-            </Card>
+              </SunbeamSurface>
+            </Animated.View>
           ))}
 
           <TouchableOpacity
-            className="rounded-xl border border-dashed border-foster-carer-300 bg-foster-carer-50 py-3 items-center"
+            className="rounded-xl border-2 border-dashed border-[#F9F506]/30 bg-[#F9F506]/5 py-4 items-center"
             onPress={() => addLocalAreaHighlight()}
+            activeOpacity={0.7}
           >
-            <Text className="text-sm font-medium text-foster-carer-600">+ Add another place</Text>
+            <Text className="text-sm font-bold text-[#181811]">+ Add another place</Text>
           </TouchableOpacity>
         </View>
       )}
-    </View>
+    </Animated.View>
   );
 
   const renderStep4 = () => (
-    <View>
-      <Text variant="h2" weight="bold" className="mb-2">
-        Step 4: House rules & things to do at home
-      </Text>
-      <Text variant="body" color="muted" className="mb-6">
-        Set gentle expectations and share some of the fun things you like doing together at home.
-      </Text>
+    <Animated.View entering={FadeIn.duration(300)}>
+      {/* Hero Header */}
+      <View className="mb-6">
+        <View className="flex-row items-center gap-3 mb-2">
+          <View className="w-10 h-10 rounded-xl bg-[#F9F506]/20 items-center justify-center">
+            <Gamepad2 size={20} color="#181811" />
+          </View>
+          <View className="flex-1">
+            <Text className="text-2xl font-bold text-[#181811]">Life at Home</Text>
+          </View>
+        </View>
+        <Text className="text-[#8C8B5F] text-base leading-relaxed">
+          Share your house rules and favourite activities. Help the child know what to expect.
+        </Text>
+      </View>
 
-      <Card variant="outlined" className="mb-4">
+      {/* House Rules */}
+      <SunbeamSurface className="mb-6">
         <View className="p-4">
-          <Text variant="body" weight="semibold">
-            House rules that help everyone feel safe
-          </Text>
-          <Text variant="caption" color="muted" className="mt-1">
-            Keep them friendly and reassuring. Tap a suggestion or write your own.
+          <View className="flex-row items-center gap-2 mb-3">
+            <Home size={16} color="#F9F506" />
+            <Text className="text-sm font-bold text-[#181811]">House Rules</Text>
+          </View>
+          <Text className="text-xs text-[#8C8B5F] mb-4">
+            Friendly expectations that help everyone feel safe.
           </Text>
 
-          <View className="flex-row flex-wrap gap-2 mt-4">
+          <View className="flex-row flex-wrap gap-2 mb-4">
             {HOUSE_RULE_SUGGESTIONS.map((rule) => (
               <TouchableOpacity
                 key={rule}
                 onPress={() => addHouseRule(rule)}
-                className="rounded-full border border-foster-carer-200 bg-foster-carer-50 px-4 py-2"
+                activeOpacity={0.7}
+                className="rounded-full bg-[#F9F506]/10 border border-[#F9F506]/30 px-3 py-1.5"
               >
-                <Text className="text-sm font-medium text-foster-carer-600">{rule}</Text>
+                <Text className="text-xs font-medium text-[#181811]">{rule}</Text>
               </TouchableOpacity>
             ))}
           </View>
 
-          <View className="mt-4 space-y-3">
-            {profileData.houseRules.length === 0 ? (
-              <Text variant="caption" color="muted">
-                No rules added yet.
-              </Text>
-            ) : (
-              profileData.houseRules.map((rule, index) => (
+          {profileData.houseRules.length > 0 && (
+            <View className="gap-2 mb-4">
+              {profileData.houseRules.map((rule, index) => (
                 <View
                   key={`${rule}-${index}`}
-                  className="flex-row items-center rounded-xl border border-gray-200 bg-gray-50 px-3 py-2"
+                  className="flex-row items-center rounded-xl bg-gray-50 border border-gray-100 px-3 py-2"
                 >
-                  <Input
-                    className="flex-1"
-                    value={rule}
-                    onChangeText={(text) => updateHouseRule(index, text)}
-                  />
-                  <TouchableOpacity onPress={() => removeHouseRule(index)} className="ml-2 p-2">
-                    <Trash2 size={16} color="#EF4444" />
+                  <Text className="text-sm text-[#181811] flex-1">{rule}</Text>
+                  <TouchableOpacity
+                    onPress={() => removeHouseRule(index)}
+                    className="p-1.5 rounded-full bg-red-50"
+                  >
+                    <Trash2 size={14} color="#EF4444" />
                   </TouchableOpacity>
                 </View>
-              ))
-            )}
-          </View>
+              ))}
+            </View>
+          )}
 
-          <View className="mt-4 flex-row items-end gap-2">
+          <View className="flex-row items-end gap-2">
             <View className="flex-1">
               <Input
-                label="Add your own"
-                placeholder="We keep phones downstairs overnight"
+                placeholder="Add your own rule..."
                 value={newRuleText}
                 onChangeText={setNewRuleText}
               />
             </View>
             <TouchableOpacity
               onPress={handleAddHouseRule}
-              className="rounded-lg bg-foster-carer-500 px-5 py-3"
+              className="rounded-xl bg-[#F9F506] px-4 py-3"
+              activeOpacity={0.8}
             >
-              <Text className="text-white text-sm font-semibold">Add</Text>
+              <Text className="text-sm font-bold text-[#181811]">Add</Text>
             </TouchableOpacity>
           </View>
         </View>
-      </Card>
+      </SunbeamSurface>
 
-      <Card variant="outlined">
+      {/* Entertainment */}
+      <SunbeamSurface>
         <View className="p-4">
-          <Text variant="body" weight="semibold" className="mb-4">
-            <Gamepad2 size={20} className="inline mr-2" />
-            Things we enjoy doing
-          </Text>
+          <View className="flex-row items-center gap-2 mb-3">
+            <Sparkles size={16} color="#F9F506" />
+            <Text className="text-sm font-bold text-[#181811]">Things We Enjoy</Text>
+          </View>
 
-          {(['tvShows', 'games', 'hobbies'] as EntertainmentCategory[]).map((category) => (
-            <View key={category} className="mb-6">
-              <Text variant="body" weight="medium">
-                {ENTERTAINMENT_CONFIG[category].label}
-              </Text>
-              <Text variant="caption" color="muted" className="mb-2">
-                Share favourites so they know what to expect.
-              </Text>
-
-              {profileData.entertainment[category].length === 0 ? (
-                <Text variant="caption" color="muted">
-                  Nothing added yet.
+          {(['tvShows', 'games', 'hobbies'] as EntertainmentCategory[]).map(
+            (category, catIndex) => (
+              <View
+                key={category}
+                className={catIndex > 0 ? 'mt-6 pt-6 border-t border-gray-100' : ''}
+              >
+                <Text className="text-sm font-semibold text-[#181811] mb-1">
+                  {ENTERTAINMENT_CONFIG[category].label}
                 </Text>
-              ) : (
-                profileData.entertainment[category].map((item, index) => (
-                  <View
-                    key={`${item}-${index}`}
-                    className="mt-2 flex-row items-center justify-between rounded-lg border border-gray-200 bg-gray-50 px-3 py-2"
-                  >
-                    <Text className="text-sm text-gray-800 flex-1 mr-2">{item}</Text>
-                    <TouchableOpacity onPress={() => removeEntertainmentItem(category, index)}>
-                      <Trash2 size={16} color="#EF4444" />
-                    </TouchableOpacity>
+                <Text className="text-xs text-[#8C8B5F] mb-3">
+                  Share favourites so they know what to expect.
+                </Text>
+
+                {profileData.entertainment[category].length > 0 && (
+                  <View className="flex-row flex-wrap gap-2 mb-3">
+                    {profileData.entertainment[category].map((item, index) => (
+                      <View
+                        key={`${item}-${index}`}
+                        className="flex-row items-center rounded-full bg-blue-50 pl-3 pr-1.5 py-1"
+                      >
+                        <Text className="text-xs font-medium text-blue-700 mr-1">{item}</Text>
+                        <TouchableOpacity
+                          onPress={() => removeEntertainmentItem(category, index)}
+                          className="p-1"
+                        >
+                          <Trash2 size={12} color="#3b82f6" />
+                        </TouchableOpacity>
+                      </View>
+                    ))}
                   </View>
-                ))
-              )}
+                )}
 
-              <View className="flex-row flex-wrap gap-2 mt-3">
-                {ENTERTAINMENT_SUGGESTIONS[category].map((suggestion) => (
-                  <TouchableOpacity
-                    key={suggestion}
-                    onPress={() => addEntertainmentItem(category, suggestion)}
-                    className="rounded-full border border-foster-carer-200 bg-white px-3 py-1.5"
-                  >
-                    <Text className="text-xs font-medium text-foster-carer-600">{suggestion}</Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
-
-              <View className="mt-3 flex-row items-end gap-2">
-                <View className="flex-1">
-                  <Input
-                    placeholder={ENTERTAINMENT_CONFIG[category].placeholder}
-                    value={newEntertainment[category]}
-                    onChangeText={(text) =>
-                      setNewEntertainment((prev) => ({
-                        ...prev,
-                        [category]: text,
-                      }))
-                    }
-                  />
+                <View className="flex-row flex-wrap gap-2 mb-3">
+                  {ENTERTAINMENT_SUGGESTIONS[category].map((suggestion) => (
+                    <TouchableOpacity
+                      key={suggestion}
+                      onPress={() => addEntertainmentItem(category, suggestion)}
+                      activeOpacity={0.7}
+                      className="rounded-full border border-gray-200 bg-white px-3 py-1.5"
+                    >
+                      <Text className="text-xs font-medium text-[#8C8B5F]">+ {suggestion}</Text>
+                    </TouchableOpacity>
+                  ))}
                 </View>
-                <TouchableOpacity
-                  onPress={() => handleAddEntertainment(category)}
-                  className="rounded-lg bg-foster-carer-500 px-5 py-3"
-                >
-                  <Text className="text-white text-sm font-semibold">Add</Text>
-                </TouchableOpacity>
+
+                <View className="flex-row items-end gap-2">
+                  <View className="flex-1">
+                    <Input
+                      placeholder={ENTERTAINMENT_CONFIG[category].placeholder}
+                      value={newEntertainment[category]}
+                      onChangeText={(text) =>
+                        setNewEntertainment((prev) => ({
+                          ...prev,
+                          [category]: text,
+                        }))
+                      }
+                    />
+                  </View>
+                  <TouchableOpacity
+                    onPress={() => handleAddEntertainment(category)}
+                    className="rounded-xl bg-[#F9F506] px-4 py-3"
+                    activeOpacity={0.8}
+                  >
+                    <Text className="text-sm font-bold text-[#181811]">Add</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
-            </View>
-          ))}
+            ),
+          )}
         </View>
-      </Card>
-    </View>
+      </SunbeamSurface>
+    </Animated.View>
   );
 
-  const renderStep5 = () => (
-    <View>
-      <Text variant="h2" weight="bold" className="mb-2">
-        Step 5: Review & Publish
-      </Text>
-      <Text variant="body" color="muted" className="mb-6">
-        Review your house profile before publishing.
-      </Text>
+  const renderStep5 = () => {
+    const requiredSlots = HOUSE_IMAGE_SLOTS.filter((slot) => slot.required);
+    const photosByCategory = profileData.photos.reduce<Record<string, HousePhoto>>((acc, photo) => {
+      acc[photo.category] = photo;
+      return acc;
+    }, {});
+    const completedPhotos = requiredSlots.filter((slot) => photosByCategory[slot.key]).length;
+    const isReadyToPublish = completedPhotos >= 3 && profileData.householdMembers.length > 0;
 
-      <Card variant="outlined" className="mb-4">
-        <View className="p-4">
-          <Text variant="body" weight="semibold" className="mb-4">
-            <CheckCircle size={20} className="inline mr-2" />
-            Profile Summary
-          </Text>
-
-          <View className="space-y-3">
-            <View className="flex-row justify-between">
-              <Text variant="body" color="muted">
-                Photos
-              </Text>
-              <Text variant="body" weight="medium">
-                {profileData.photos.length}
-              </Text>
+    return (
+      <Animated.View entering={FadeIn.duration(300)}>
+        {/* Hero Header */}
+        <View className="mb-6">
+          <View className="flex-row items-center gap-3 mb-2">
+            <View className="w-10 h-10 rounded-xl bg-[#F9F506]/20 items-center justify-center">
+              <CheckCircle size={20} color="#181811" />
             </View>
-
-            <View className="flex-row justify-between">
-              <Text variant="body" color="muted">
-                Household Members
-              </Text>
-              <Text variant="body" weight="medium">
-                {profileData.householdMembers.length}
-              </Text>
-            </View>
-
-            <View className="flex-row justify-between">
-              <Text variant="body" color="muted">
-                Local Area Overview
-              </Text>
-              <Text variant="body" weight="medium">
-                {profileData.localArea.overview ? '✓' : '○'}
-              </Text>
-            </View>
-
-            <View className="flex-row justify-between">
-              <Text variant="body" color="muted">
-                House Rules
-              </Text>
-              <Text variant="body" weight="medium">
-                {profileData.houseRules.length}
-              </Text>
+            <View className="flex-1">
+              <Text className="text-2xl font-bold text-[#181811]">Ready to Share</Text>
             </View>
           </View>
-        </View>
-      </Card>
-
-      {!profileData.isPublished ? (
-        <TouchableOpacity
-          className="w-full bg-foster-carer-500 rounded-xl py-4 items-center"
-          onPress={publishProfile}
-        >
-          <Text className="text-white font-semibold text-base">Publish Profile</Text>
-          <Text className="text-white/80 text-sm mt-1">
-            Make this visible to children in your care
+          <Text className="text-[#8C8B5F] text-base leading-relaxed">
+            Review your profile before making it visible to children in your care.
           </Text>
-        </TouchableOpacity>
-      ) : (
-        <View>
-          <Card variant="outlined" className="bg-green-50 border-green-200 mb-4">
-            <View className="p-4 items-center">
-              <CheckCircle size={48} color="#10B981" />
-              <Text variant="h3" weight="semibold" className="mt-3 mb-1 text-green-700">
-                Profile Published!
-              </Text>
-              <Text variant="body" color="muted" className="text-center">
-                Your house profile is now visible to children in your care.
-              </Text>
-            </View>
-          </Card>
-
-          <TouchableOpacity
-            className="w-full bg-foster-carer-500 rounded-xl py-4 items-center"
-            onPress={() => router.push('/(foster_carer)/view-house-profile')}
-            accessibilityRole="button"
-            accessibilityLabel="View your published house profile"
-          >
-            <View className="flex-row items-center">
-              <Eye size={20} color="white" />
-              <Text className="text-white font-semibold text-base ml-2">View Profile</Text>
-            </View>
-          </TouchableOpacity>
         </View>
-      )}
-    </View>
-  );
+
+        {/* Profile Summary */}
+        <SunbeamSurface className="mb-6">
+          <View className="p-4">
+            <View className="flex-row items-center gap-2 mb-4">
+              <Sparkles size={16} color="#F9F506" />
+              <Text className="text-sm font-bold text-[#181811]">Profile Summary</Text>
+            </View>
+
+            <View className="gap-3">
+              <View className="flex-row items-center justify-between py-2 border-b border-gray-100">
+                <View className="flex-row items-center gap-2">
+                  <Home size={16} color="#8C8B5F" />
+                  <Text className="text-sm text-[#181811]">Photos</Text>
+                </View>
+                <View className="flex-row items-center gap-2">
+                  <Text className="text-sm font-bold text-[#181811]">
+                    {completedPhotos}/{requiredSlots.length}
+                  </Text>
+                  {completedPhotos >= requiredSlots.length && (
+                    <CheckCircle size={14} color="#34C759" />
+                  )}
+                </View>
+              </View>
+
+              <View className="flex-row items-center justify-between py-2 border-b border-gray-100">
+                <View className="flex-row items-center gap-2">
+                  <Users size={16} color="#8C8B5F" />
+                  <Text className="text-sm text-[#181811]">Household Members</Text>
+                </View>
+                <View className="flex-row items-center gap-2">
+                  <Text className="text-sm font-bold text-[#181811]">
+                    {profileData.householdMembers.length}
+                  </Text>
+                  {profileData.householdMembers.length > 0 && (
+                    <CheckCircle size={14} color="#34C759" />
+                  )}
+                </View>
+              </View>
+
+              <View className="flex-row items-center justify-between py-2 border-b border-gray-100">
+                <View className="flex-row items-center gap-2">
+                  <MapPin size={16} color="#8C8B5F" />
+                  <Text className="text-sm text-[#181811]">Local Area</Text>
+                </View>
+                <View className="flex-row items-center gap-2">
+                  <Text className="text-sm font-bold text-[#181811]">
+                    {profileData.localArea.highlights.length} places
+                  </Text>
+                  {profileData.localArea.overview && <CheckCircle size={14} color="#34C759" />}
+                </View>
+              </View>
+
+              <View className="flex-row items-center justify-between py-2">
+                <View className="flex-row items-center gap-2">
+                  <Gamepad2 size={16} color="#8C8B5F" />
+                  <Text className="text-sm text-[#181811]">House Rules & Fun</Text>
+                </View>
+                <View className="flex-row items-center gap-2">
+                  <Text className="text-sm font-bold text-[#181811]">
+                    {profileData.houseRules.length} rules
+                  </Text>
+                  {profileData.houseRules.length > 0 && <CheckCircle size={14} color="#34C759" />}
+                </View>
+              </View>
+            </View>
+          </View>
+        </SunbeamSurface>
+
+        {!profileData.isPublished ? (
+          <Animated.View entering={FadeInDown.delay(200)}>
+            {!isReadyToPublish && (
+              <View className="mb-4 p-4 bg-amber-50 rounded-xl border border-amber-200">
+                <Text className="text-sm font-semibold text-amber-800 mb-1">Almost there!</Text>
+                <Text className="text-xs text-amber-700">
+                  Add at least 3 photos and 1 household member to publish.
+                </Text>
+              </View>
+            )}
+            <TouchableOpacity
+              className={`w-full rounded-2xl py-4 items-center ${
+                isReadyToPublish ? 'bg-[#F9F506]' : 'bg-gray-200'
+              }`}
+              onPress={isReadyToPublish ? publishProfile : undefined}
+              activeOpacity={isReadyToPublish ? 0.8 : 1}
+              disabled={!isReadyToPublish}
+            >
+              <Text
+                className={`font-bold text-base ${
+                  isReadyToPublish ? 'text-[#181811]' : 'text-gray-400'
+                }`}
+              >
+                Publish Profile
+              </Text>
+              <Text
+                className={`text-sm mt-0.5 ${
+                  isReadyToPublish ? 'text-[#181811]/70' : 'text-gray-400'
+                }`}
+              >
+                Make visible to children in your care
+              </Text>
+            </TouchableOpacity>
+          </Animated.View>
+        ) : (
+          <Animated.View entering={FadeInDown.delay(200)}>
+            <SunbeamSurface className="mb-4 bg-green-50 border-green-200">
+              <View className="p-6 items-center">
+                <View className="w-16 h-16 rounded-full bg-green-100 items-center justify-center mb-3">
+                  <CheckCircle size={32} color="#10B981" />
+                </View>
+                <Text className="text-lg font-bold text-green-700 mb-1">Profile Published!</Text>
+                <Text className="text-sm text-green-600 text-center">
+                  Your house profile is now visible to children in your care.
+                </Text>
+              </View>
+            </SunbeamSurface>
+
+            <TouchableOpacity
+              className="w-full bg-[#F9F506] rounded-2xl py-4 items-center"
+              onPress={() => router.push('/(foster_carer)/view-house-profile')}
+              activeOpacity={0.8}
+              accessibilityRole="button"
+              accessibilityLabel="View your published house profile"
+            >
+              <View className="flex-row items-center">
+                <Eye size={20} color="#181811" />
+                <Text className="text-[#181811] font-bold text-base ml-2">View Profile</Text>
+              </View>
+            </TouchableOpacity>
+          </Animated.View>
+        )}
+      </Animated.View>
+    );
+  };
 
   const renderCurrentStep = () => {
     switch (currentStep) {
@@ -1233,43 +1422,46 @@ export default function HouseProfileScreen() {
 
   if (loading) {
     return (
-      <SafeAreaView className="flex-1 bg-gray-50">
+      <SafeAreaView className="flex-1 bg-[#F8F8F5]">
         <View className="flex-1 items-center justify-center">
-          <ActivityIndicator size="large" color="#34C759" />
+          <ActivityIndicator size="large" color="#F9F506" />
+          <Text className="mt-4 text-sm text-[#8C8B5F]">Loading your profile...</Text>
         </View>
       </SafeAreaView>
     );
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50">
+    <SafeAreaView className="flex-1 bg-[#F8F8F5]">
       <View className="flex-1">
-        {/* Compact progress header */}
-        <View className="bg-white border-b border-gray-200 px-4 pt-3 pb-3">
-          <View className="flex-row items-center justify-between">
+        {/* Premium Progress Header */}
+        <View className="bg-white border-b border-black/5 px-4 pt-4 pb-4">
+          <View className="flex-row items-center justify-between mb-3">
             <View className="flex-row items-center flex-1">
-              <View className="mr-3">{getStepIcon()}</View>
+              <View className="w-10 h-10 rounded-xl bg-[#F9F506]/20 items-center justify-center mr-3">
+                {getStepIcon()}
+              </View>
               <View className="flex-1">
-                <Text variant="caption" color="muted" className="uppercase tracking-[0.16em] mb-1">
-                  House profile
+                <Text className="text-xs font-bold text-[#8C8B5F] uppercase tracking-wider mb-0.5">
+                  House Profile
                 </Text>
-                <Text variant="body" weight="semibold" className="text-gray-900" numberOfLines={2}>
+                <Text className="text-lg font-bold text-[#181811]" numberOfLines={1}>
                   {getStepTitle()}
                 </Text>
               </View>
             </View>
-            <Text variant="caption" color="muted" className="ml-3">
-              Step {currentStep} of 5
-            </Text>
+            <View className="bg-[#F9F506]/10 rounded-full px-3 py-1">
+              <Text className="text-xs font-bold text-[#181811]">{currentStep}/5</Text>
+            </View>
           </View>
 
           {/* Progress bar */}
-          <View className="mt-3 flex-row gap-1.5">
+          <View className="flex-row gap-1.5">
             {[1, 2, 3, 4, 5].map((step) => (
               <View
                 key={step}
                 className={`h-1.5 flex-1 rounded-full ${
-                  step <= currentStep ? 'bg-foster-carer-500' : 'bg-foster-carer-100'
+                  step <= currentStep ? 'bg-[#F9F506]' : 'bg-gray-100'
                 }`}
               />
             ))}
@@ -1282,30 +1474,29 @@ export default function HouseProfileScreen() {
           className="flex-1"
           keyboardVerticalOffset={Platform.OS === 'ios' ? 88 : 0}
         >
-          <ScrollView className="flex-1">
+          <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
             <View className="p-4">
-              {/* Preview as child button */}
+              {/* Preview button */}
               <View className="mb-4 flex-row justify-end">
                 <TouchableOpacity
-                  className="flex-row items-center rounded-full border border-foster-carer-200 bg-white px-3 py-1.5"
+                  className="flex-row items-center rounded-full bg-white border border-black/5 px-4 py-2 shadow-sm"
                   accessibilityRole="button"
                   accessibilityLabel="Preview house profile as the child will see it"
                   onPress={() => router.push('/(foster_carer)/preview-house-profile')}
+                  activeOpacity={0.7}
                 >
-                  <Eye size={16} color="#34C759" />
-                  <Text className="ml-2 text-xs font-semibold text-foster-carer-600">
-                    Preview as child
-                  </Text>
+                  <Eye size={14} color="#181811" />
+                  <Text className="ml-2 text-xs font-bold text-[#181811]">Preview</Text>
                 </TouchableOpacity>
               </View>
 
               {uploading && (
-                <Card variant="outlined" className="mb-4 bg-foster-carer-50">
+                <SunbeamSurface className="mb-4">
                   <View className="p-4 flex-row items-center">
-                    <ActivityIndicator size="small" color="#34C759" />
-                    <Text className="ml-3">Uploading photo...</Text>
+                    <ActivityIndicator size="small" color="#F9F506" />
+                    <Text className="ml-3 text-sm text-[#181811]">Uploading photo...</Text>
                   </View>
-                </Card>
+                </SunbeamSurface>
               )}
 
               {renderCurrentStep()}
@@ -1314,16 +1505,17 @@ export default function HouseProfileScreen() {
         </KeyboardAvoidingView>
 
         {/* Navigation Footer */}
-        <View className="bg-white border-t border-gray-200 px-4 py-3">
+        <View className="bg-white border-t border-black/5 px-4 py-3">
           <View className="flex-row gap-3">
             {currentStep > 1 && (
               <TouchableOpacity
-                className="flex-1 bg-gray-200 rounded-xl py-4 items-center"
+                className="flex-1 bg-gray-100 rounded-xl py-4 items-center"
                 onPress={goToPreviousStep}
+                activeOpacity={0.7}
               >
                 <View className="flex-row items-center">
-                  <ChevronLeft size={20} color="#374151" />
-                  <Text className="text-gray-700 font-semibold ml-2">Previous</Text>
+                  <ChevronLeft size={18} color="#181811" />
+                  <Text className="text-[#181811] font-bold ml-1">Back</Text>
                 </View>
               </TouchableOpacity>
             )}
@@ -1331,7 +1523,8 @@ export default function HouseProfileScreen() {
             <TouchableOpacity
               className={`${
                 currentStep > 1 ? 'flex-1' : 'w-full'
-              } bg-foster-carer-500 rounded-xl py-4 items-center`}
+              } bg-[#F9F506] rounded-xl py-4 items-center`}
+              activeOpacity={0.8}
               onPress={
                 currentStep === 5
                   ? profileData.isPublished
@@ -1341,22 +1534,68 @@ export default function HouseProfileScreen() {
               }
             >
               <View className="flex-row items-center">
-                {currentStep === 5 && profileData.isPublished && <Eye size={20} color="white" />}
+                {currentStep === 5 && profileData.isPublished && <Eye size={18} color="#181811" />}
                 <Text
-                  className={`text-white font-semibold text-base ${currentStep === 5 && profileData.isPublished ? 'ml-2' : 'mr-2'}`}
+                  className={`text-[#181811] font-bold text-base ${currentStep === 5 && profileData.isPublished ? 'ml-2' : ''}`}
                 >
                   {currentStep === 5
                     ? profileData.isPublished
                       ? 'View Profile'
                       : 'Publish'
-                    : 'Next'}
+                    : 'Continue'}
                 </Text>
-                {currentStep < 5 && <ChevronRight size={20} color="white" />}
+                {currentStep < 5 && <ChevronRight size={18} color="#181811" className="ml-1" />}
               </View>
             </TouchableOpacity>
           </View>
         </View>
       </View>
+
+      {/* Celebration Modal */}
+      {showCelebration && (
+        <Animated.View
+          entering={FadeIn.duration(300)}
+          className="absolute inset-0 bg-black/60 items-center justify-center z-50"
+        >
+          <Animated.View
+            entering={FadeInDown.delay(200).duration(400)}
+            className="bg-white rounded-3xl mx-6 p-8 items-center shadow-2xl"
+          >
+            <View className="w-20 h-20 rounded-full bg-green-100 items-center justify-center mb-4">
+              <CheckCircle size={40} color="#10B981" />
+            </View>
+            <Text className="text-2xl font-bold text-[#181811] text-center mb-2">
+              Profile Published!
+            </Text>
+            <Text className="text-base text-[#8C8B5F] text-center mb-6 leading-relaxed">
+              Your house profile is now visible to children in your care. They can explore your home
+              and get to know your family.
+            </Text>
+            <View className="w-full gap-3">
+              <TouchableOpacity
+                onPress={() => {
+                  setShowCelebration(false);
+                  router.push('/(foster_carer)/view-house-profile');
+                }}
+                className="w-full bg-[#F9F506] rounded-xl py-4 items-center"
+                activeOpacity={0.8}
+              >
+                <View className="flex-row items-center">
+                  <Eye size={18} color="#181811" />
+                  <Text className="text-[#181811] font-bold ml-2">View Your Profile</Text>
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => setShowCelebration(false)}
+                className="w-full py-3 items-center"
+                activeOpacity={0.7}
+              >
+                <Text className="text-[#8C8B5F] font-medium">Continue Editing</Text>
+              </TouchableOpacity>
+            </View>
+          </Animated.View>
+        </Animated.View>
+      )}
     </SafeAreaView>
   );
 }
