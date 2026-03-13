@@ -3,7 +3,7 @@ import { useRouter } from 'expo-router';
 import { Briefcase, MessageSquare, TrendingUp } from 'lucide-react-native';
 import { useAuth } from '../../src/contexts/AuthContext';
 import { useCases } from '../../src/hooks/useCases';
-import { useUnreadCount } from '../../src/hooks/useMessages';
+import { useUnreadMessageCount } from '../../src/hooks/useUnreadMessageCount';
 import { useSocialCareNews } from '../../src/hooks/useSocialCareNews';
 import { Screen, Container, Card, CardContent, Text, Badge } from '../../src/components/ui';
 import { SunbeamHeader, SunbeamSurface } from '../../src/components/sunbeam';
@@ -14,7 +14,7 @@ export default function SocialWorkerDashboard() {
   const router = useRouter();
   const { profile } = useAuth();
   const { cases, loading, error, refetch } = useCases();
-  const unreadCount = useUnreadCount(profile?.id || '');
+  const { unreadCount } = useUnreadMessageCount();
   const { news, loading: newsLoading, refetch: refetchNews } = useSocialCareNews();
 
   const getCaseLabel = (caseId: string, caseNumber?: string | null) =>

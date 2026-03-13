@@ -256,68 +256,6 @@ export function useMessages(
 }
 
 /**
- * Hook to get unread message count
- */
-export function useUnreadCount(userId: string) {
-  const [count, setCount] = useState(0);
-  const channelRef = useRef<RealtimeChannel | null>(null);
-
-  useEffect(() => {
-    if (!userId) return;
-
-    let isMounted = true;
-    fetchUnreadCount();
-
-    // Subscribe to message changes
-    const channel = supabase
-      .channel(`user:${userId}:unread`)
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'messages',
-          filter: `recipient_id=eq.${userId}`,
-        },
-        () => {
-          if (isMounted) {
-            fetchUnreadCount();
-          }
-        },
-      )
-      .subscribe();
-
-    channelRef.current = channel;
-
-    return () => {
-      isMounted = false;
-      if (channelRef.current) {
-        channelRef.current.unsubscribe().then(() => {
-          supabase.removeChannel(channelRef.current!);
-          channelRef.current = null;
-        });
-      }
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userId]);
-
-  const fetchUnreadCount = useCallback(async () => {
-    if (!userId) return;
-
-    // Unread = any status that is NOT 'read' (includes 'sent', 'delivered')
-    const { count: unreadCount } = await supabase
-      .from('messages')
-      .select('*', { count: 'exact', head: true })
-      .eq('recipient_id', userId)
-      .neq('status', 'read');
-
-    setCount(unreadCount || 0);
-  }, [userId]);
-
-  return count;
-}
-
-/**
  * Hook for child messaging (token-based, one-way to social worker)
  */
 export function useChildMessaging(token: string) {

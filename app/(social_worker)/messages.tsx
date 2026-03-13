@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, TouchableOpacity, FlatList, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MessageCircle, ChevronLeft } from 'lucide-react-native';
@@ -19,17 +19,22 @@ import { THEME } from '../../src/lib/theme';
 export default function MessagesScreen() {
   const { cases, loading } = useCases();
   const [selectedCase, setSelectedCase] = useState<string | null>(null);
+  const selectedCaseData = selectedCase
+    ? cases.find((c: CaseWithDetails) => c.id === selectedCase)
+    : null;
 
   const getCaseLabel = (caseData: CaseWithDetails) =>
     caseData.case_number || `Case-${String(caseData.id).slice(0, 8).toUpperCase()}`;
 
-  // If a case is selected, show the messaging screen
-  if (selectedCase) {
-    const caseData = cases.find((c: CaseWithDetails) => c.id === selectedCase);
-    if (!caseData) {
+  useEffect(() => {
+    if (selectedCase && !selectedCaseData) {
       setSelectedCase(null);
-      return null;
     }
+  }, [selectedCase, selectedCaseData]);
+
+  // If a case is selected, show the messaging screen
+  if (selectedCase && selectedCaseData) {
+    const caseData = selectedCaseData;
 
     const caseLabel = getCaseLabel(caseData);
 

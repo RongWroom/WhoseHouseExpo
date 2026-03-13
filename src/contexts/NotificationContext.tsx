@@ -56,18 +56,52 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
   );
 
   const updateUnreadCount = useCallback(async () => {
-    if (!user) return;
-
-    const { data, error } = await supabase
-      .from('messages')
-      .select('id', { count: 'exact', head: true })
-      .eq('recipient_id', user.id)
-      .neq('status', 'read');
-
-    if (!error && data) {
-      setUnreadCount(data as unknown as number);
+    if (!user || !profile?.role) {
+      setUnreadCount(0);
+      return;
     }
-  }, [user]);
+
+    try {
+      let visibleCaseIds: string[] = [];
+
+      if (profile.role === 'social_worker') {
+        const { data, error } = await supabase
+          .from('cases')
+          .select('id')
+          .eq('social_worker_id', user.id);
+
+        if (error) throw error;
+        visibleCaseIds = ((data || []) as Array<{ id: string }>).map((row) => row.id);
+      } else if (profile.role === 'foster_carer') {
+        const { data, error } = await supabase
+          .from('cases')
+          .select('id')
+          .eq('foster_carer_id', user.id)
+          .eq('status', 'active');
+
+        if (error) throw error;
+        visibleCaseIds = ((data || []) as Array<{ id: string }>).map((row) => row.id);
+      }
+
+      if (visibleCaseIds.length === 0) {
+        setUnreadCount(0);
+        return;
+      }
+
+      const { count, error } = await supabase
+        .from('messages')
+        .select('id', { count: 'exact', head: true })
+        .eq('recipient_id', user.id)
+        .neq('status', 'read')
+        .in('case_id', visibleCaseIds);
+
+      if (error) throw error;
+      setUnreadCount(count || 0);
+    } catch (error) {
+      console.error('Failed to update unread notification count:', error);
+      setUnreadCount(0);
+    }
+  }, [profile?.role, user]);
 
   // Listen for real-time messages
   useEffect(() => {
