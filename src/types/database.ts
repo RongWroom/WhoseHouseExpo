@@ -156,7 +156,7 @@ export type Database = {
           social_worker_id: string | null;
           foster_carer_id: string | null;
           household_id: string | null;
-          status: 'active' | 'pending' | 'closed';
+          status: 'active' | 'pending' | 'closed' | 'draft';
           created_at: string;
           updated_at: string;
           closed_at: string | null;
@@ -168,7 +168,7 @@ export type Database = {
           social_worker_id?: string | null;
           foster_carer_id?: string | null;
           household_id?: string | null;
-          status?: 'active' | 'pending' | 'closed';
+          status?: 'active' | 'pending' | 'closed' | 'draft';
           created_at?: string;
           updated_at?: string;
           closed_at?: string | null;
@@ -180,7 +180,7 @@ export type Database = {
           social_worker_id?: string | null;
           foster_carer_id?: string | null;
           household_id?: string | null;
-          status?: 'active' | 'pending' | 'closed';
+          status?: 'active' | 'pending' | 'closed' | 'draft';
           created_at?: string;
           updated_at?: string;
           closed_at?: string | null;
@@ -402,7 +402,7 @@ export type Database = {
     Enums: {
       user_role: 'social_worker' | 'foster_carer' | 'admin';
       message_status: 'sent' | 'delivered' | 'read';
-      case_status: 'active' | 'pending' | 'closed';
+      case_status: 'active' | 'pending' | 'closed' | 'draft';
       token_status: 'active' | 'used' | 'expired' | 'revoked';
       audit_action: AuditAction;
     };

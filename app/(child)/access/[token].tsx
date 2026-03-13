@@ -65,7 +65,7 @@ export default function ChildViewScreen() {
       } else {
         setSessionData(data);
         // Fetch house photos after successful validation
-        fetchHousePhotos(data.case_number);
+        fetchHousePhotos(data.case_id);
       }
     } catch {
       Alert.alert('Error', 'Could not validate your access');
@@ -80,7 +80,7 @@ export default function ChildViewScreen() {
         .from('case_media')
         .select('*')
         .eq('case_id', caseId)
-        .eq('metadata->>for_child_viewing', 'true')
+        .eq('is_visible_to_child', true)
         .order('created_at', { ascending: false });
 
       if (!error && data) {
