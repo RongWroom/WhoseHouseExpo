@@ -76,6 +76,32 @@ export default function CreateCaseScreen() {
     setLoading(false);
   };
 
+  const handleSaveDraft = async () => {
+    setLoading(true);
+    const { error } = await createCase({
+      placementType,
+      childCanShare,
+      childAgeRange: childAgeRange || undefined,
+      childGender: childGender || undefined,
+      internalNotes: internalNotes || undefined,
+      expectedEndDate: expectedEndDate || undefined,
+      status: 'draft',
+    });
+
+    if (error) {
+      Alert.alert('Error', error.message);
+      setLoading(false);
+      return;
+    }
+
+    Alert.alert(
+      'Draft Saved',
+      'Case saved as draft. You can find it in your caseload and continue later.',
+      [{ text: 'OK', onPress: () => router.back() }],
+    );
+    setLoading(false);
+  };
+
   const searchHouseholds = async () => {
     setSearching(true);
     const { data, error } = await searchAvailableHouseholds({
@@ -318,6 +344,15 @@ export default function CreateCaseScreen() {
             <Text className="text-white font-semibold ml-2">Create Case & Find Placement</Text>
           </>
         )}
+      </Pressable>
+
+      {/* Save as Draft Button */}
+      <Pressable
+        onPress={handleSaveDraft}
+        disabled={loading}
+        className={`mt-3 py-4 rounded-xl items-center flex-row justify-center border-2 border-gray-300 bg-white ${loading ? 'opacity-50' : ''}`}
+      >
+        <Text className="text-gray-700 font-semibold">Save as Draft</Text>
       </Pressable>
     </ScrollView>
   );

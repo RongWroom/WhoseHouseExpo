@@ -304,6 +304,7 @@ export function useUnreadCount(userId: string) {
   const fetchUnreadCount = useCallback(async () => {
     if (!userId) return;
 
+    // Unread = any status that is NOT 'read' (includes 'sent', 'delivered')
     const { count: unreadCount } = await supabase
       .from('messages')
       .select('*', { count: 'exact', head: true })

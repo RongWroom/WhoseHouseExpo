@@ -115,6 +115,7 @@ export default function FosterCarerTabsLayout() {
         options={{
           title: 'Dashboard',
           tabBarIcon: renderHomeIcon,
+          headerShown: false,
         }}
       />
       <Tabs.Screen
@@ -122,6 +123,7 @@ export default function FosterCarerTabsLayout() {
         options={{
           title: 'Messages',
           tabBarIcon: renderMessagesIcon,
+          headerShown: false,
         }}
       />
       <Tabs.Screen
@@ -137,6 +139,7 @@ export default function FosterCarerTabsLayout() {
         options={{
           title: 'Settings',
           tabBarIcon: renderSettingsIcon,
+          headerShown: false,
         }}
       />
     </Tabs>

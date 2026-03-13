@@ -21,25 +21,34 @@ export default function FosterCarerMessagesScreen() {
 
   if (loading) {
     return (
-      <SafeAreaView className="flex-1 bg-white">
-        <View className="flex-1 items-center justify-center">
-          <LoadingSpinner size="large" />
-          <Text variant="body" color="muted" className="mt-3">
-            Loading messages...
-          </Text>
-        </View>
-      </SafeAreaView>
+      <Screen backgroundColor="bg-[#F8F8F5]">
+        <Container className="py-4">
+          <TitleBar
+            title="Messages"
+            subtitle="Secure communication with your social worker"
+            accentColor={THEME.roles.fosterCarer.primary}
+            className="mb-6"
+          />
+          <View className="flex-1 items-center justify-center py-12">
+            <LoadingSpinner size="large" />
+            <Text variant="body" color="muted" className="mt-3">
+              Loading messages...
+            </Text>
+          </View>
+        </Container>
+      </Screen>
     );
   }
 
   if (!caseData || !caseData.social_worker_id) {
     return (
       <Screen backgroundColor="bg-[#F8F8F5]">
-        <Container className="py-6">
+        <Container className="py-4">
           <TitleBar
             title="Messages"
             subtitle="Secure communication with your social worker"
             accentColor={THEME.roles.fosterCarer.primary}
+            className="mb-6"
           />
           <View className="flex-1 items-center justify-center px-6 py-12">
             <EmptyState
@@ -57,11 +66,24 @@ export default function FosterCarerMessagesScreen() {
   const socialWorkerName = caseData.social_worker?.full_name || 'Your Social Worker';
 
   return (
-    <MessagingScreen
-      caseId={caseData.id}
-      recipientId={caseData.social_worker_id}
-      recipientName={socialWorkerName}
-      recipientRole="social_worker"
-    />
+    <View className="flex-1 bg-white">
+      <SafeAreaView edges={['top']} className="bg-[#F8F8F5]">
+        <Container className="py-4">
+          <TitleBar
+            title="Messages"
+            subtitle={`Conversation with ${socialWorkerName}`}
+            accentColor={THEME.roles.fosterCarer.primary}
+          />
+        </Container>
+      </SafeAreaView>
+      <MessagingScreen
+        caseId={caseData.id}
+        recipientId={caseData.social_worker_id}
+        recipientName={socialWorkerName}
+        recipientRole="social_worker"
+        showHeader={false}
+        accentRole="foster_carer"
+      />
+    </View>
   );
 }

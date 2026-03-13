@@ -51,11 +51,12 @@ export function useUnreadMessageCount() {
     try {
       setLoading(true);
 
+      // Unread = any status that is NOT 'read' (includes 'sent', 'delivered')
       const { count, error } = await supabase
         .from('messages')
         .select('*', { count: 'exact', head: true })
         .eq('recipient_id', user.id)
-        .eq('status', 'sent');
+        .neq('status', 'read');
 
       if (error) throw error;
 

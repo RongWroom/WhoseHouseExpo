@@ -269,7 +269,7 @@ async function seedDatabase() {
           recipient_id: isFromSocialWorker ? caseItem.fosterCarerId : caseItem.socialWorkerId,
           case_id: caseItem.id,
           content: message,
-          status: Math.random() > 0.3 ? 'read' : 'delivered', // Most messages are read
+          status: Math.random() > 0.6 ? 'read' : Math.random() > 0.5 ? 'delivered' : 'sent', // 40% unread
           is_urgent: Math.random() > 0.9, // 10% chance of urgent
           created_at: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString(),
         });

@@ -1132,6 +1132,7 @@ export const createCase = async (params: {
   childGender?: string;
   internalNotes?: string;
   expectedEndDate?: string;
+  status?: 'draft' | 'pending' | 'active';
 }): Promise<{ data: { caseId: string } | null; error: SupabaseError | null }> => {
   try {
     const {
@@ -1152,6 +1153,7 @@ export const createCase = async (params: {
       p_child_gender: params.childGender || null,
       p_internal_notes: params.internalNotes ? sanitizeInput(params.internalNotes) : null,
       p_expected_end_date: params.expectedEndDate || null,
+      p_status: params.status || 'pending',
     } as any);
 
     if (error) {
