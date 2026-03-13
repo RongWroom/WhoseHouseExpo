@@ -13,6 +13,7 @@ import {
   SupabaseErrorCode,
 } from '../types/supabase-functions';
 import { getDeviceInfo } from '../utils/device-info';
+import { getChildAgeFromDateOfBirth } from '../utils/childProfiles';
 import { validateToken, sanitizeInput } from '../utils/validation';
 import { DEEP_LINK_CONFIG, API_RETRY_CONFIG } from '../config/constants';
 import Constants from 'expo-constants';
@@ -1105,13 +1106,16 @@ export interface PlacementRequest {
   case_number: string;
   placement_type: PlacementType;
   child_can_share: boolean;
-  child_age_range: string | null;
+  child_age: string | null;
   social_worker_name: string;
   message: string | null;
   expected_start_date: string | null;
   expected_end_date: string | null;
   created_at: string;
   expires_at: string;
+  referral_id?: string | null;
+  referral_pen_picture?: string | null;
+  referral_summary?: string | null;
 }
 
 export interface HouseholdCapacity {
@@ -1124,33 +1128,115 @@ export interface HouseholdCapacity {
   availability_notes: string | null;
 }
 
-// Create a new case (social worker only)
-export const createCase = async (params: {
+export interface ChildProfileCreateParams {
+  pid: string;
+  dateOfBirth?: string;
+  sexAtBirth?: string;
+  genderIdentity?: string;
+  ethnicity?: string;
+  legalStatus?: string;
+  summary?: string;
+  penPicture?: string;
+}
+
+export interface CreateCaseForChildParams {
+  childProfileId: string;
   placementType?: PlacementType;
   childCanShare?: boolean;
-  childAgeRange?: string;
-  childGender?: string;
   internalNotes?: string;
   expectedEndDate?: string;
   status?: 'draft' | 'pending' | 'active';
-}): Promise<{ data: { caseId: string } | null; error: SupabaseError | null }> => {
+}
+
+export interface CreatePlacementReferralParams {
+  caseId: string;
+  referralRequestDate?: string;
+  completedByName?: string;
+  completedByContact?: string;
+  managerApprovalGranted?: boolean;
+  managerApprovedBy?: string;
+  managerApprovedAt?: string;
+  additionalSnapshot?: Record<string, any>;
+}
+
+export interface UpsertChildNeedsParams {
+  childProfileId: string;
+  educationSummary?: string;
+  healthSummary?: string;
+  communicationSummary?: string;
+  emotionalSummary?: string;
+  physicalSummary?: string;
+  culturalSummary?: string;
+  selfCareSummary?: string;
+  supportRequired?: string;
+}
+
+export interface UpsertChildRiskParams {
+  childProfileId: string;
+  riskType: string;
+  hasRisk: boolean;
+  details?: string;
+  knownTriggers?: string;
+  successfulStrategies?: string;
+  lastIncidentAt?: string;
+}
+
+export interface UpsertChildFamilyTimeParams {
+  childProfileId: string;
+  contactPerson: string;
+  frequency?: string;
+  preferredLocation?: string;
+  supervised?: boolean;
+  notes?: string;
+}
+
+export const createChildProfile = async (
+  params: ChildProfileCreateParams,
+): Promise<{ data: { childProfileId: string } | null; error: SupabaseError | null }> => {
   try {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) {
+    const { data, error } = await supabase.rpc('create_child_profile', {
+      p_pid: sanitizeInput(params.pid),
+      p_date_of_birth: params.dateOfBirth || null,
+      p_sex_at_birth: params.sexAtBirth ? sanitizeInput(params.sexAtBirth) : null,
+      p_gender_identity: params.genderIdentity ? sanitizeInput(params.genderIdentity) : null,
+      p_ethnicity: params.ethnicity ? sanitizeInput(params.ethnicity) : null,
+      p_legal_status: params.legalStatus ? sanitizeInput(params.legalStatus) : null,
+      p_summary: params.summary ? sanitizeInput(params.summary) : null,
+      p_pen_picture: params.penPicture ? sanitizeInput(params.penPicture) : null,
+    } as any);
+
+    if (error) {
       return {
         data: null,
-        error: new SupabaseError(SupabaseErrorCode.UNAUTHORIZED, 'Not authenticated'),
+        error: new SupabaseError(
+          SupabaseErrorCode.DATABASE_ERROR,
+          error.message || 'Failed to create child profile',
+          error,
+        ),
       };
     }
 
-    const { data, error } = await supabase.rpc('create_case', {
-      p_social_worker_id: user.id,
+    return { data: { childProfileId: data as string }, error: null };
+  } catch (error: any) {
+    return {
+      data: null,
+      error: new SupabaseError(
+        SupabaseErrorCode.UNKNOWN_ERROR,
+        'Failed to create child profile',
+        error,
+      ),
+    };
+  }
+};
+
+export const createCaseForChild = async (
+  params: CreateCaseForChildParams,
+): Promise<{ data: { caseId: string } | null; error: SupabaseError | null }> => {
+  try {
+    const { data, error } = await supabase.rpc('create_case_for_child', {
+      p_child_profile_id: params.childProfileId,
       p_placement_type: params.placementType || 'long_term',
       p_child_can_share: params.childCanShare ?? true,
-      p_child_age_range: params.childAgeRange || null,
-      p_child_gender: params.childGender || null,
       p_internal_notes: params.internalNotes ? sanitizeInput(params.internalNotes) : null,
       p_expected_end_date: params.expectedEndDate || null,
       p_status: params.status || 'pending',
@@ -1161,17 +1247,213 @@ export const createCase = async (params: {
         data: null,
         error: new SupabaseError(
           SupabaseErrorCode.DATABASE_ERROR,
-          error.message || 'Failed to create case',
+          error.message || 'Failed to create case for child',
           error,
         ),
       };
     }
 
-    return { data: { caseId: data }, error: null };
+    return { data: { caseId: data as string }, error: null };
   } catch (error: any) {
     return {
       data: null,
-      error: new SupabaseError(SupabaseErrorCode.UNKNOWN_ERROR, 'Failed to create case', error),
+      error: new SupabaseError(
+        SupabaseErrorCode.UNKNOWN_ERROR,
+        'Failed to create case for child',
+        error,
+      ),
+    };
+  }
+};
+
+export const createPlacementReferral = async (
+  params: CreatePlacementReferralParams,
+): Promise<{ data: { referralId: string } | null; error: SupabaseError | null }> => {
+  try {
+    const { data, error } = await supabase.rpc('create_placement_referral', {
+      p_case_id: params.caseId,
+      p_referral_request_date: params.referralRequestDate || null,
+      p_completed_by_name: params.completedByName ? sanitizeInput(params.completedByName) : null,
+      p_completed_by_contact: params.completedByContact
+        ? sanitizeInput(params.completedByContact)
+        : null,
+      p_manager_approval_granted: params.managerApprovalGranted ?? false,
+      p_manager_approved_by: params.managerApprovedBy
+        ? sanitizeInput(params.managerApprovedBy)
+        : null,
+      p_manager_approved_at: params.managerApprovedAt || null,
+      p_additional_snapshot: params.additionalSnapshot || {},
+    } as any);
+
+    if (error) {
+      return {
+        data: null,
+        error: new SupabaseError(
+          SupabaseErrorCode.DATABASE_ERROR,
+          error.message || 'Failed to create placement referral',
+          error,
+        ),
+      };
+    }
+
+    return { data: { referralId: data as string }, error: null };
+  } catch (error: any) {
+    return {
+      data: null,
+      error: new SupabaseError(
+        SupabaseErrorCode.UNKNOWN_ERROR,
+        'Failed to create placement referral',
+        error,
+      ),
+    };
+  }
+};
+
+export const sendPlacementReferral = async (
+  referralId: string,
+): Promise<{ success: boolean; error: SupabaseError | null }> => {
+  try {
+    const { error } = await supabase.rpc('send_placement_referral', {
+      p_referral_id: referralId,
+    } as any);
+
+    if (error) {
+      return {
+        success: false,
+        error: new SupabaseError(
+          SupabaseErrorCode.DATABASE_ERROR,
+          error.message || 'Failed to send placement referral',
+          error,
+        ),
+      };
+    }
+
+    return { success: true, error: null };
+  } catch (error: any) {
+    return {
+      success: false,
+      error: new SupabaseError(
+        SupabaseErrorCode.UNKNOWN_ERROR,
+        'Failed to send placement referral',
+        error,
+      ),
+    };
+  }
+};
+
+export const upsertChildNeeds = async (
+  params: UpsertChildNeedsParams,
+): Promise<{ success: boolean; error: SupabaseError | null }> => {
+  try {
+    const { error } = await supabase.rpc('upsert_child_needs', {
+      p_child_profile_id: params.childProfileId,
+      p_education_summary: params.educationSummary ? sanitizeInput(params.educationSummary) : null,
+      p_health_summary: params.healthSummary ? sanitizeInput(params.healthSummary) : null,
+      p_communication_summary: params.communicationSummary
+        ? sanitizeInput(params.communicationSummary)
+        : null,
+      p_emotional_summary: params.emotionalSummary ? sanitizeInput(params.emotionalSummary) : null,
+      p_physical_summary: params.physicalSummary ? sanitizeInput(params.physicalSummary) : null,
+      p_cultural_summary: params.culturalSummary ? sanitizeInput(params.culturalSummary) : null,
+      p_self_care_summary: params.selfCareSummary ? sanitizeInput(params.selfCareSummary) : null,
+      p_support_required: params.supportRequired ? sanitizeInput(params.supportRequired) : null,
+    } as any);
+
+    if (error) {
+      return {
+        success: false,
+        error: new SupabaseError(
+          SupabaseErrorCode.DATABASE_ERROR,
+          error.message || 'Failed to save child needs',
+          error,
+        ),
+      };
+    }
+
+    return { success: true, error: null };
+  } catch (error: any) {
+    return {
+      success: false,
+      error: new SupabaseError(
+        SupabaseErrorCode.UNKNOWN_ERROR,
+        'Failed to save child needs',
+        error,
+      ),
+    };
+  }
+};
+
+export const upsertChildRisk = async (
+  params: UpsertChildRiskParams,
+): Promise<{ success: boolean; error: SupabaseError | null }> => {
+  try {
+    const { error } = await supabase.rpc('upsert_child_risk', {
+      p_child_profile_id: params.childProfileId,
+      p_risk_type: sanitizeInput(params.riskType),
+      p_has_risk: params.hasRisk,
+      p_details: params.details ? sanitizeInput(params.details) : null,
+      p_known_triggers: params.knownTriggers ? sanitizeInput(params.knownTriggers) : null,
+      p_successful_strategies: params.successfulStrategies
+        ? sanitizeInput(params.successfulStrategies)
+        : null,
+      p_last_incident_at: params.lastIncidentAt || null,
+    } as any);
+
+    if (error) {
+      return {
+        success: false,
+        error: new SupabaseError(
+          SupabaseErrorCode.DATABASE_ERROR,
+          error.message || 'Failed to save child risk',
+          error,
+        ),
+      };
+    }
+
+    return { success: true, error: null };
+  } catch (error: any) {
+    return {
+      success: false,
+      error: new SupabaseError(SupabaseErrorCode.UNKNOWN_ERROR, 'Failed to save child risk', error),
+    };
+  }
+};
+
+export const upsertChildFamilyTime = async (
+  params: UpsertChildFamilyTimeParams,
+): Promise<{ success: boolean; error: SupabaseError | null }> => {
+  try {
+    const { error } = await supabase.rpc('upsert_child_family_time', {
+      p_child_profile_id: params.childProfileId,
+      p_contact_person: sanitizeInput(params.contactPerson),
+      p_frequency: params.frequency ? sanitizeInput(params.frequency) : null,
+      p_preferred_location: params.preferredLocation
+        ? sanitizeInput(params.preferredLocation)
+        : null,
+      p_supervised: params.supervised ?? false,
+      p_notes: params.notes ? sanitizeInput(params.notes) : null,
+    } as any);
+
+    if (error) {
+      return {
+        success: false,
+        error: new SupabaseError(
+          SupabaseErrorCode.DATABASE_ERROR,
+          error.message || 'Failed to save family time',
+          error,
+        ),
+      };
+    }
+
+    return { success: true, error: null };
+  } catch (error: any) {
+    return {
+      success: false,
+      error: new SupabaseError(
+        SupabaseErrorCode.UNKNOWN_ERROR,
+        'Failed to save family time',
+        error,
+      ),
     };
   }
 };
@@ -1243,6 +1525,7 @@ export const sendPlacementRequest = async (params: {
   message?: string;
   expectedStartDate?: string;
   expectedEndDate?: string;
+  referralId?: string;
 }): Promise<{ data: { requestId: string } | null; error: SupabaseError | null }> => {
   try {
     const {
@@ -1262,6 +1545,7 @@ export const sendPlacementRequest = async (params: {
       p_message: params.message ? sanitizeInput(params.message) : null,
       p_expected_start_date: params.expectedStartDate || null,
       p_expected_end_date: params.expectedEndDate || null,
+      p_referral_id: params.referralId || null,
     } as any);
 
     if (error) {
@@ -1566,7 +1850,7 @@ export const getPendingCases = async (): Promise<{
     case_number: string;
     placement_type: PlacementType;
     child_can_share: boolean;
-    child_age_range: string | null;
+    child_age: number | null;
     child_gender: string | null;
     created_at: string;
     expected_end_date: string | null;
@@ -1594,8 +1878,11 @@ export const getPendingCases = async (): Promise<{
         case_number,
         placement_type,
         child_can_share,
-        child_age_range,
-        child_gender,
+        child_profiles (
+          date_of_birth,
+          gender_identity,
+          sex_at_birth
+        ),
         created_at,
         expected_end_date
       `,
@@ -1618,6 +1905,12 @@ export const getPendingCases = async (): Promise<{
     // Get pending request counts for each case
     const casesWithCounts = await Promise.all(
       (cases || []).map(async (c: any) => {
+        const childProfile = (c.child_profiles || null) as {
+          date_of_birth?: string | null;
+          gender_identity?: string | null;
+          sex_at_birth?: string | null;
+        } | null;
+        const childAge = getChildAgeFromDateOfBirth(childProfile?.date_of_birth ?? null);
         const { count } = await supabase
           .from('placement_requests' as any)
           .select('*', { count: 'exact', head: true })
@@ -1626,6 +1919,8 @@ export const getPendingCases = async (): Promise<{
 
         return {
           ...c,
+          child_age: childAge,
+          child_gender: childProfile?.gender_identity || childProfile?.sex_at_birth || null,
           pending_requests_count: count || 0,
         };
       }),

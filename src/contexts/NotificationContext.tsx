@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useRef, useCallback } from 'react';
+import React, { createContext, useState, useEffect, useRef, useCallback } from 'react';
 import { Animated, View, Text, TouchableOpacity, SafeAreaView } from 'react-native';
 import { MessageCircle, X, AlertTriangle } from 'lucide-react-native';
 import { supabase } from '../lib/supabase';
@@ -20,14 +20,6 @@ interface NotificationContextType {
 }
 
 const NotificationContext = createContext<NotificationContextType | undefined>(undefined);
-
-export function useNotifications() {
-  const context = useContext(NotificationContext);
-  if (!context) {
-    throw new Error('useNotifications must be used within NotificationProvider');
-  }
-  return context;
-}
 
 export function NotificationProvider({ children }: { children: React.ReactNode }) {
   const { user, profile } = useAuth();

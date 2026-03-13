@@ -198,13 +198,13 @@ export function PlacementRequests() {
               </Text>
 
               <View className="flex-row mt-2 gap-4">
-                {request.child_age_range && (
+                {request.child_age && (
                   <View>
                     <Text variant="caption" color="muted">
-                      Age Range
+                      Age
                     </Text>
                     <Text variant="caption" weight="medium">
-                      {request.child_age_range}
+                      {request.child_age}
                     </Text>
                   </View>
                 )}
@@ -261,6 +261,24 @@ export function PlacementRequests() {
                 <Text variant="caption" className="text-blue-800">
                   {request.message}
                 </Text>
+              </View>
+            )}
+
+            {(request.referral_summary || request.referral_pen_picture) && (
+              <View className="bg-purple-50 rounded-lg p-3 mb-3">
+                <Text variant="caption" weight="semibold" className="text-purple-700 mb-1">
+                  Referral Snapshot
+                </Text>
+                {request.referral_summary ? (
+                  <Text variant="caption" className="text-purple-900 mb-2">
+                    {request.referral_summary}
+                  </Text>
+                ) : null}
+                {request.referral_pen_picture ? (
+                  <Text variant="caption" className="text-purple-900">
+                    {request.referral_pen_picture}
+                  </Text>
+                ) : null}
               </View>
             )}
 
